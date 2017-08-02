@@ -1,5 +1,5 @@
 {
-  "name": "cs546-project",
+  "name": "Savnac",
   "version": "1.0.0",
   "description": "Canvas-like system to keep track of assignments and grades from multiple courses",
   "main": "app.js",
