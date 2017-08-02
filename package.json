@@ -1,0 +1,25 @@
+{
+  "name": "cs546-project",
+  "version": "1.0.0",
+  "description": "Canvas-like system to keep track of assignments and grades from multiple courses",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pwnfooj716/cs546-project.git"
+  },
+  "author": "Brandon Botsch, Mitchell Freedman, Pranay Lade, Avikshith Pilly",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pwnfooj716/cs546-project/issues"
+  },
+  "homepage": "https://github.com/pwnfooj716/cs546-project#readme",
+  "dependencies": {
+    "express": "^4.15.3",
+    "mongodb": "^2.2.30",
+    "passport": "^0.3.2"
+  }
+}
