@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/pwnfooj716/cs546-project#readme",
   "dependencies": {
+    "body-parser": "^1.17.2",
     "express": "^4.15.3",
     "mongodb": "^2.2.30",
     "passport": "^0.3.2"
