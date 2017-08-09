@@ -1,11 +1,20 @@
 
-<div>
+<form method="POST" action="/login">
     <label for="username">Username</label>
     <input id="username" type="text" placeholder="Username" class="">
     <label for="password"></label>
     <input id="password" type="password" placeholder="Password" class="">
-    <button id="login-button">Login</button>
-</div>
+    <button id="login-button" type="submit">Login</button>
+</form>
+{{#if hasErrors}}
+    <ul class="error-list">
+        {{#each errors}}
+            <li>
+                {{this}}
+            </li>
+        {{/each}}
+    </ul>
+{{/if}}
 <div>
     <button id="login-teacher-creation">New Teacher</button>
     <button id="login-student-creation">New Student</button>
