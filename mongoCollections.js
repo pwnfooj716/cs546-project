@@ -16,9 +16,7 @@ let getCollectionFn = (collection) => {
 
 module.exports = {
 	students: getCollectionFn("students"),
-	studentCourses: getCollectionFn("studentCourses"),
 	teachers: getCollectionFn("teachers"),
-	teacherCourses: getCollectionFn("teacherCourses"),
-	classes: getCollectionFn("classes"),
+	classes: getCollectionFn("courses"),
 	assignments: getCollectionFn("assignments")
 };
