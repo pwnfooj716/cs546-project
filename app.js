@@ -3,6 +3,8 @@ const bodyParser = require("body-parser");
 const exphbs = require("express-handlebars");
 const app = express();
 
+///install passport
+
 app.use("/public", express.static(__dirname + "/public"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
