@@ -1,0 +1,9 @@
+<div>
+    <h1>{{class.name}}</h1>
+    <ul id="assignment-list">
+        {{#each assignments}}
+            <li class="assignment"><a href="/class/{{../class.id}}/{{id}}">{{name}} {{deadline}} {{grade}}</a></li>
+        {{/each}}
+    </ul>
+    <a href="/class">back</a>
+</div>

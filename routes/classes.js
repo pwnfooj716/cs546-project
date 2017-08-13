@@ -3,12 +3,37 @@ const router = express.Router();
 
 router.get("/", (req, res) => {
     //get data to add to class list here
-    res.render('class/classList');
+    let data ={
+        classes: [{
+            id: 1,
+            name: "cs546",
+            semester: "summer"
+        },{
+            id: 2,
+            name: "cs546",
+            semester: "fall"
+        }]
+    };
+    res.render('class/classList',data);
 });
 
 router.get("/:classID", (req, res) => {
     //get class info based on class ID
-    res.render('class/class');
+    let data = {
+        class: {id: req.params.classID, name: "cs546"},
+        assignments: [{
+            id: 1,
+            name: "first",
+            deadline: "1/1/1",
+            grade: "NA"
+        },{
+            id: 2,
+            name: "second",
+            deadline: "1/1/1",
+            grade: "NA"
+        }]
+    };
+    res.render('class/class', data);
 });
 
 router.post("/", (req,res) => {
@@ -17,7 +42,11 @@ router.post("/", (req,res) => {
 
 router.get("/:classID/:assignmentID", (req,res) => {
     //display the assignment the user wants to see
-    res.render('class/assignment');
+    let data = {
+        class: {id: req.params.classID},
+        assignment: {id: req.params.assignmentID, name: "first", description: "This is an assignment"}
+    };
+    res.render('class/assign', data);
 });
 
 router.post("/:classId"), (req, res) => {
