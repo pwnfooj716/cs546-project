@@ -56,7 +56,11 @@ router.get("/:classID", (req, res) => {
             assignments: [100,99]
         }]
     }
-    res.render('class/class', tdata);
+
+    if (req.params.classID == 1)
+        res.render('class/class', data);
+    else
+        res.render('class/class', tdata);
 });
 
 router.post("/", (req,res) => {
