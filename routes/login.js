@@ -8,6 +8,7 @@ router.get("/", (req, res) => {
 
 router.post("/", (req, res) => {
     //do passport stuff here
+    res.redirect("/class");
 })
 
 module.exports = router;

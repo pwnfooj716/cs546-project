@@ -1,0 +1,31 @@
+{{#if isStudent}}
+    <div id="student">
+        <h1>{{class.name}}</h1>
+        <ul id="assignment-list">
+            {{#each assignments}}
+                <li class="assignment"><a href="/class/{{../class.id}}/{{id}}">{{name}} {{deadline}} {{grade}}</a></li>
+            {{/each}}
+        </ul>
+        <a href="/class">back</a>
+    </div>
+{{else}}
+    <div id="teacher">
+    <table>
+        <tr>
+            <th></th>
+            {{#each assignments}}
+                <th>{{name}}</th>
+            {{/each}}
+        </tr>
+        {{#each students}}
+            <tr>
+                <td>{{name}}</td>
+                {{#each assignments}}
+                    <td>{{this}}</td>
+                {{/each}}
+            </tr>
+        {{/each}}
+    </table>
+    </div>
+    <a href="/class">back</a>
+{{/if}}
