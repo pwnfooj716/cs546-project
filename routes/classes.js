@@ -20,6 +20,7 @@ router.get("/", (req, res) => {
 router.get("/:classID", (req, res) => {
     //get class info based on class ID
     let data = {
+        isStudent: true,
         class: {id: req.params.classID, name: "cs546"},
         assignments: [{
             id: 1,
@@ -33,7 +34,29 @@ router.get("/:classID", (req, res) => {
             grade: "NA"
         }]
     };
-    res.render('class/class', data);
+    let tdata = {
+        isStudent: false,
+        class: {id: req.params.classID, name: "cs546"},
+        assignments: [{
+            id: 1,
+            name: "first",
+            deadline: "1/1/1",
+            grade: "NA"
+        },{
+            id: 2,
+            name: "second",
+            deadline: "1/1/1",
+            grade: "NA"
+        }],
+        students: [{
+            name: "john",
+            assignments: [99,100]
+        },{
+            name: "bob",
+            assignments: [100,99]
+        }]
+    }
+    res.render('class/class', tdata);
 });
 
 router.post("/", (req,res) => {
