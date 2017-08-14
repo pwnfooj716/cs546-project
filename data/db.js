@@ -1,9 +1,9 @@
 const uuid = require("uuid/v4");
-const mongoCollections = require("./mongoCollections");
+const mongoCollections = require("../config/mongoCollections");
 
 const students = mongoCollections.students;
 const teachers = mongoCollections.teachers;
-const courses = mongoCollectinos.courses;
+const courses = mongoCollections.courses;
 const assignments = mongoCollections.assignments;
 
 
@@ -59,6 +59,24 @@ function addAssignmentToCourse(courseId, assignmentId) {
 
 function updateCourseGrade(studentId, courseId, grade) {
 	return Promise.reject("Not yet implemented");
+}
+
+function getStudent(studentId) {
+    return students().then((collection) => {
+        return collection.findOne({ _id: studentId }).then((student) => {
+        	if (!student) throw "student not found";
+        	return student;
+		})
+    });
+}
+
+function getTeacher(teacherId) {
+    return teachers().then((collection) => {
+        return collection.findOne({ _id: teacherId }).then((teacher) => {
+            if (!teacher) throw "teacher not found";
+            return teacher;
+        })
+    });
 }
 
 module.exports = {
@@ -123,5 +141,23 @@ module.exports = {
 	},
 	updateAssignmentSubmission(studentId, assignmentId, submission) {
 		return Promise.reject("Not yet implemented");
+	},
+	getCoursesForStudent(studentId) {
+		return getStudent(studentId).then((student) => {
+			let coursesIds = student.courses.map((x)=>{return x.courseId});
+			return courses().then((collection) => {
+				collection.find({_id: {$in: coursesIds}},{courseName: 1}).then((result) => {
+					if (result.length != student.courses.length) throw ("courses missing");
+					let final=[];
+					for (let x=0; x<result.length; x++) {
+						final.push({id: x, name: result[x], grade: student.courses[x].grade, isCurrentlyTaking: student.courses[x].isCurrentlyTaking});
+					}
+					return final;
+				});
+			});
+		});
+	},
+	getCourseForTeacher(teacherId) {
+		return Promise.reject("Not yet implemented")
 	}
 }

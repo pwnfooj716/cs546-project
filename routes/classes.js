@@ -1,8 +1,13 @@
 const express = require('express');
 const router = express.Router();
+const db = require('./data');
 
 router.get("/", (req, res) => {
     //get data to add to class list here
+    let studentId = 10000000; //cookie should already know this
+    db.getCoursesForStudent(studentId).then((courses) => {
+        res.render('class/classList', courses);
+    });
     let data ={
         classes: [{
             id: 1,
