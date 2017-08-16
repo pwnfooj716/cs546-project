@@ -4,4 +4,7 @@
         <li class="class"><a href="/class/{{id}}">{{name}} {{semester}}</a></li>
     {{/each}}
     </ul>
+    {{#if isTeacher}}
+        <a href="/class/new">Create a Class</a>
+    {{/if}}
 </div>
