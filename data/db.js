@@ -6,7 +6,6 @@ const teachers = mongoCollections.teachers;
 const courses = mongoCollections.courses;
 const assignments = mongoCollections.assignments;
 
-
 function addCourseToTeacher(teacherId, courseId) {
 	if (typeof teacherId != "string") {
 		return Promise.reject("StudentId must be a string");
@@ -21,18 +20,24 @@ function addCourseToTeacher(teacherId, courseId) {
 	};
 
 	return teachers().then((collection) => {
-		return collection.update({_id: teacherId}, {$addToSet: {courses: courseInfo}});
+		return collection.update({_id: teacherId}, {$addToSet: {courses: courseInfo}}).then(() => {
+			return courseId;
+		});
 	});
 }
 
-function addCourse(newCourse) {
-	if (typeof newCourse != "object") {
-		return Promise.reject("Course must be provided");
+function addCourse(courseName, teacherId) {
+	if (typeof courseName != "string") {
+		return Promise.reject("Course Name must be provided");
 	}
-
-	newCourse._id = uuid();
-	newCourse.studentIDs = [];
-	newCourse.assignments = [];
+	
+	let newCourse = {
+		_id: uuid(),
+		courseName: courseName,
+		teacherId: teacherId,
+		studentIDs: [],
+		assignments: []
+	}
 
 	return courses().then((collection) => {
 		return collection.insertOne(newCourse).then((information) => {
@@ -47,6 +52,7 @@ function addAssignment(newAssignment) {
 	}
 
 	newAssignment._id = uuid();
+	newAssignment.submissions = [];
 	
 	return assignments().then((collection) => {
 		return collection.insertOne(newAssignment);
@@ -79,7 +85,17 @@ function getTeacher(teacherId) {
     });
 }
 
+function getCourse(courseId) {
+	return courses().then((collection) => {
+		return collection.findOne({_id: courseId}).then((course) => {
+			if (!course) throw "course not found";
+			return course;
+		});
+	});
+}
+
 module.exports = {
+	// User: Teacher
 	addStudent(newStudent) {
 		if (typeof newStudent != "object") {
 			return Promise.reject("Student must be provided");
@@ -91,6 +107,7 @@ module.exports = {
 			return collection.insertOne(newStudent);
 		});
 	},
+	// User: Teacher
 	addTeacher(newTeacher) {
 		if (typeof newTeacher != "object") {
 			return Promise.reject("Teacher must be provided");
@@ -102,6 +119,7 @@ module.exports = {
 			return collection.insertOne(newTeacher);
 		});
 	},
+	// User: Teacher
 	addStudentToCourse(studentId, courseId) {
 		if (typeof studentId != "string") {
 			return Promise.reject("StudentId must be a string");
@@ -110,54 +128,103 @@ module.exports = {
 			return Promise.reject("ClassId must be a string");
 		}
 
-		let courseInfo = {
-			courseId: courseId,
-			grade: undefined,
-			isCurrentlyTaking: true
-		}
+		return courses().then((collection) => {
+			return collection.update({_id: courseId}, {$addToSet: {studentIDs: studentId}}).then(() => {
+				let courseInfo = {
+					courseId: courseId,
+					grade: NaN,
+					isCurrentlyTaking: true
+				}
 
-		return students().then((collection) => {
-			return collection.update({_id: studentId}, {$addToSet: {courses: courseInfo}});
-		});
-	},
-	createCourseForTeacher(teacherId, newCourse) {
-		addCourse(newCourse).then((courseId) => {
-			return addCourseToTeacher(teacherId, courseId);
-		});
-	},
-	createAssignmentForCourse(courseId, newAssignment) {
-		addAssigment(newAssignment).then((assignmentId) => {
-			return addAssignmentToCourse(courseId, assignmentId);
-		});
-	},
-	getAssignmentsForCourse(courseId) {
-		return Promise.reject("Not yet implemented");
-	},
-	getCoursesForAssignment(assignmentId) {
-		return Promise.reject("Not yet implemeneted");
-	},
-	updateAssignmentGrade(studentId, assignmentId, grade, teacherResponse) {
-		return Promise.reject("Not yet implemented");
-	},
-	updateAssignmentSubmission(studentId, assignmentId, submission) {
-		return Promise.reject("Not yet implemented");
-	},
-	getCoursesForStudent(studentId) {
-		return getStudent(studentId).then((student) => {
-			let coursesIds = student.courses.map((x)=>{return x.courseId});
-			return courses().then((collection) => {
-				collection.find({_id: {$in: coursesIds}},{courseName: 1}).then((result) => {
-					if (result.length != student.courses.length) throw ("courses missing");
-					let final=[];
-					for (let x=0; x<result.length; x++) {
-						final.push({id: x, name: result[x], grade: student.courses[x].grade, isCurrentlyTaking: student.courses[x].isCurrentlyTaking});
-					}
-					return final;
+				return students().then((collection) => {
+					return collection.update({_id: studentId}, {$addToSet: {courses: courseInfo}});
 				});
 			});
 		});
 	},
-	getCourseForTeacher(teacherId) {
-		return Promise.reject("Not yet implemented")
+	// User: Teacher
+	createCourseForTeacher(teacherId, courseName) {
+		return addCourse(courseName, teacherId).then((courseId) => {
+			return addCourseToTeacher(teacherId, courseId);
+		});
+	},
+	// User: Teacher
+	createAssignmentForCourse(courseId, newAssignment) {
+		return addAssigment(newAssignment).then((assignmentId) => {
+			return addAssignmentToCourse(courseId, assignmentId);
+		});
+	},
+	// User: Teacher || Studnet
+	// Why do we need this?
+	getAssignmentsForCourse(courseId) {
+		return courses().then((collection) => {
+			return collection.findOne({_id: courseId}).then((course) => {
+				return course.assignments;
+			});
+		});
+	},
+	// User: Teacher
+	updateAssignmentInfo(assignmentId, newInfo) {
+		return assignments().then((collection) => {
+			return collection.update({_id: assigmentId, newInfo});
+		});
+	},
+	// User: Teacher
+	updateAssignmentGrade(studentId, assignmentId, grade, teacherResponse) {
+		return assignments().then((collection) => {
+			return collection.findOne({ _id: assignmentId }).then((assignment) => {
+				assignment.submissions.forEach((submission) => {
+					if (submission.studentId === studentId) {
+						submission.grade = grade;
+						submission.teacherResponse = teacherResponse;
+					}
+				});
+			});
+		});
+	},
+	// User: Student
+	updateAssignmentSubmission(studentId, assignmentId, submission) {
+		return assignments().then((collection) => {
+			return collection.findOne({ _id: assignmentId }).then((assignment) => {
+				assignment.submissions.forEach((submission) => {
+					if (submission.studentId === studentId) {
+						submission.submission = submission;
+						submission.submissionDate = new Date();// current date
+					}
+				});
+			});
+		});
+	},
+	// User : Student 
+	getCoursesForStudent(studentId) {
+		return getStudent(studentId).then((student) => {
+			let coursesIds = student.courses.map((x) => {return x.courseId});
+			return courses().then((collection) => {
+				return collection.find({_id: {$in: coursesIds}}, {courseName: 1}).then((courses) => {
+					if (courses.length != student.courses.length) throw ("courses missing");
+					let result = [];
+					for (let x = 0; x < courses.length; x++) {
+						result.push({index: x, name: courses[x].courseName, grade: student.courses[x].grade, isCurrentlyTaking: student.courses[x].isCurrentlyTaking});
+					}
+					return result;
+				});
+			});
+		});
+	},
+	// User : Teacher
+	getCoursesForTeacher(teacherId) {
+		return getTeacher(teacherId).then((teacher) => {
+			let coursesIds = teacher.courses.map((x) => {return x.courseId});
+			return courses().then((collection) => {
+				return collection.find({_id: {$in: coursesIds}}, {courseName: 1}).toArray().then((courses) => {
+					if (courses.length != teacher.courses.length) throw ("courses missing");
+					let result = [];
+					for (let x = 0; x < courses.length; x++) {
+						result.push({index: x, name: courses[x].courseName, isCurrentlyTeaching: teacher.courses[x].isCurrentlyTeaching});
+					}
+					return result;
+				});
+			});
+		});
 	}
 }
