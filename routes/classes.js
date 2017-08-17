@@ -22,6 +22,11 @@ router.get("/", (req, res) => {
     // res.render('class/classList',data);
 });
 
+router.get("/new", (req,res) => {
+    //class creation page
+    res.render('class/createClass');
+});
+
 router.get("/:classID", (req, res) => {
     //get class info based on class ID
     let data = {
@@ -72,6 +77,12 @@ router.post("/", (req,res) => {
     //add class based on json data
 });
 
+router.get("/:classID/new", (req, res) => {
+    //assignment creation page
+    let data = {classId: req.params.classID};
+    res.render('class/createAssign', data);
+});
+
 router.get("/:classID/:assignmentID", (req,res) => {
     //display the assignment the user wants to see
     let data = {
@@ -81,9 +92,9 @@ router.get("/:classID/:assignmentID", (req,res) => {
     res.render('class/assign', data);
 });
 
-router.post("/:classId"), (req, res) => {
+router.post("/:classID", (req, res) => {
     //create an assignment here
-};
+});
 
 router.post("/:classID/:assignmentID", (req, res) => {
    //post a submission here
