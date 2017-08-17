@@ -1,15 +1,15 @@
 <form method="POST" action="/new/student">
     <h1>Student Creation</h1>
     <label for="studentID">Student ID</label>
-    <input id="studentID" type="text" pattern="[0-9]+{8}" placeholder="10000000">
+    <input id="studentID" name="studentID" type="text" pattern="[0-9]+{8}" placeholder="10000000">
     <label for="first-name">First Name</label>
-    <input id="first-name" type="text" placeholder="First Name">
+    <input id="first-name" name="firstName" type="text" placeholder="First Name">
     <label for="last-name">Last Name</label>
-    <input id="last-name" type="text" placeholder="Last Name">
+    <input id="last-name" name="lastName" type="text" placeholder="Last Name">
     <label for="username">Username</label>
-    <input id="username" type="text" placeholder="Username">
+    <input id="username" name="username" type="text" placeholder="Username">
     <label for="password">Password</label>
-    <input id="password" type="password" placeholder="Password">
+    <input id="password" name="password" type="password" placeholder="Password">
     <label for="confirm-password">Confirmed Password</label>
     <input id="confirm-password" type="password" placeholder="Confirm Password">
     <button type="submit">Create</button>

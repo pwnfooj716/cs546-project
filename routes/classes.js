@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('./data');
+const db = require('../data');
 
 router.get("/", (req, res) => {
     //get data to add to class list here
@@ -8,18 +8,18 @@ router.get("/", (req, res) => {
     db.getCoursesForStudent(studentId).then((courses) => {
         res.render('class/classList', courses);
     });
-    let data ={
-        classes: [{
-            id: 1,
-            name: "cs546",
-            semester: "summer"
-        },{
-            id: 2,
-            name: "cs546",
-            semester: "fall"
-        }]
-    };
-    res.render('class/classList',data);
+    // let data ={
+    //     classes: [{
+    //         id: 1,
+    //         name: "cs546",
+    //         semester: "summer"
+    //     },{
+    //         id: 2,
+    //         name: "cs546",
+    //         semester: "fall"
+    //     }]
+    // };
+    // res.render('class/classList',data);
 });
 
 router.get("/:classID", (req, res) => {
