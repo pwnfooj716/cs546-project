@@ -215,7 +215,7 @@ module.exports = {
 			let coursesIds = student.courses.map((x) => {return x.courseId});
 			if (coursesIds.length===0) return [];
 			return courses().then((collection) => {
-				return collection.find({_id: {$in: coursesIds}}, {courseName: 1}).then((courses) => {
+				return collection.find({_id: {$in: coursesIds}}, {courseName: 1}).toArray().then((courses) => {
 					if (courses.length != student.courses.length) throw ("courses missing");
 					let result = [];
 					for (let x = 0; x < courses.length; x++) {

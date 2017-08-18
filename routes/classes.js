@@ -11,7 +11,8 @@ router.get("/", (req, res) => {
     }
     if (user.isStudent)
         db.getCoursesForStudent(user._id).then((courses) => {
-            res.render('class/classList', courses);
+
+            res.render('class/classList', {classes: courses});
         });
     else
         db.getCoursesForTeacher(user._id).then((courses) => {
@@ -56,7 +57,7 @@ router.get("/:classID", (req, res) => {
                         id: x,
                         name: assignments[x].name,
                         grade: submission.grade,
-                        dueDate: assignments[x].dueDate
+                        //dueDate: assignments[x].dueDate
                     });
                 }
                 data.isStudent = true;
@@ -146,7 +147,7 @@ router.post("/:classID", (req, res) => {
     }
     let data = req.body;
     let courseID = user.courses[req.params.classID].courseId;
-    db.createAssignmentForCourse(courseID,req.body).then(() => res.redirect(`/class/${req.params.classID}`));
+    db.createAssignmentForCourse(courseID,data).then(() => res.redirect(`/class/${req.params.classID}`));
 });
 
 router.post("/:classID/:assignmentID", (req, res) => {
