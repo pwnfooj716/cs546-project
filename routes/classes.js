@@ -22,6 +22,7 @@ router.get("/", (req, res) => {
 
 router.get("/new", (req,res) => {
     //class creation page
+    let user = req.user;
     if (!user) {
         res.redirect("/login");
         return;
@@ -89,6 +90,7 @@ router.get("/:classID", (req, res) => {
 
 router.post("/", (req,res) => {
     //add class based on json data
+    let user = req.user;
     if (!user || user.isStudent) {
         res.redirect("/login");
         return;
@@ -101,6 +103,7 @@ router.post("/", (req,res) => {
 
 router.get("/:classID/new", (req, res) => {
     //assignment creation page
+    let user = req.user;
     if (!user || user.isStudent) {
         res.redirect("/login");
         return;
@@ -111,6 +114,7 @@ router.get("/:classID/new", (req, res) => {
 
 router.get("/:classID/:assignmentID", (req,res) => {
     //display the assignment the user wants to see
+    let user = req.user;
     if (!user) {
         res.redirect("/login");
         return;
@@ -132,6 +136,7 @@ router.get("/:classID/:assignmentID", (req,res) => {
 
 router.post("/:classID", (req, res) => {
     //create an assignment here
+    let user = req.user;
     if (!user || user.isStudent) {
         res.redirect("/login");
         return;
@@ -142,6 +147,7 @@ router.post("/:classID", (req, res) => {
 
 router.post("/:classID/:assignmentID", (req, res) => {
    //post a submission here
+    let user = req.user;
     if (!user && !user.isStudent) {
         res.redirect("/login");
         return;
@@ -162,6 +168,7 @@ router.post("/:classID/:assignmentID", (req, res) => {
 
 router.put("/:classID/:assignmentID", (req, res) => {
     //update a submission here
+    let user = req.user;
     if (!user && !user.isStudent) {
         res.redirect("/login");
         return;

@@ -1,10 +1,12 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const exphbs = require("express-handlebars");
+const exps = require('express-session');
 const configRoutes = require("./routes");
 const app = express();
 const db = require ("./data");
 const bcrypt = require("bcryptjs");
+const flash = require('connect-flash');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 
@@ -34,6 +36,8 @@ passport.deserializeUser(function(id, done) {
 app.use("/public", express.static(__dirname + "/public"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(flash());
+app.use(exps({ secret: 'keyboard cat', resave: false, saveUninitialized: false }));
 app.use(passport.initialize());
 app.use(passport.session());
 
