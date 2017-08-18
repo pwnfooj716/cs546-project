@@ -50,14 +50,16 @@ router.get("/:classID", (req, res) => {
             if (user.isStudent) {
                 for (let x = 0; x < assignments.length; x++) {
                     let sub = assignments[x].submissions;
-                    let submission = sub.find((s) => {
+                    let submission = {grade: "NA"};
+                    if (sub.length)
+                        submission = sub.find((s) => {
                         return s.studentID === user.id
                     });
                     assign.push({
                         id: x,
                         name: assignments[x].name,
                         grade: submission.grade,
-                        //dueDate: assignments[x].dueDate
+                        dueDate: assignments[x].dueDate
                     });
                 }
                 data.isStudent = true;
@@ -125,14 +127,15 @@ router.get("/:classID/:assignmentID", (req,res) => {
     }
     let classID = req.params.classID;
     let assignmentID = req.params.assignmentID;
-    db.getAssignmentsForCourse(user.courses[classID]).then((assignments)=> {
+    db.getAssignmentsForCourse(user.courses[classID].courseId).then((assignments)=> {
         if (assignments.length< assignmentID) {
             res.redirect(`/${classID}`);
             return;
         }
+        let assignment = assignments[assignmentID];
         let data = {
             class: {id: classID},
-            assignment: {id: assignmentID, name: assignments[assignmentID].name, description: assignments[assignmentID].description}
+            assignment: {id: assignmentID, name: assignment.name, description: assignment.prompt, dueDate: assignment.dueDate}
         };
         res.render('class/assign', data);
     });
