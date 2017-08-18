@@ -15,8 +15,20 @@ if (test == 1) {
                 collection.find({}).toArray().then((result) => {
                     console.log("this is all teachers");
                     console.log(result);
-                })
-            })
+                    courses().then((collection) => {
+                       collection.find({}).toArray().then((result) => {
+                           console.log("this is all courses");
+                           console.log(result);
+                           assignments().then((collection)=> {
+                               collection.find({}).toArray().then((result) => {
+                                   console.log("this is all assignments");
+                                   console.log(result);
+                               });
+                           });
+                       });
+                    });
+                });
+            });
         });
     });
     console.log("data");
@@ -28,7 +40,13 @@ if (test == 2) {
     }).then(()=>{
         teachers().then((collection) => {
             collection.remove({});
-        })
+            courses().then((collection) => {
+                collection.remove({});
+                assignments().then((collection) => {
+                   collection.remove({});
+                });
+            });
+        });
     });
     console.log("clear");
 }

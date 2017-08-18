@@ -4,6 +4,10 @@ const passport = require("passport");
 
 router.get("/", (req, res) => {
     // if user already logged in shuold redirect to classes page
+    if (req.user) {
+        res.redirect('/class');
+        return;
+    }
     res.render('login/login');
 })
 

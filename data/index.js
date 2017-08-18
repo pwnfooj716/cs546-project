@@ -7,7 +7,7 @@ const courses = mongoCollections.courses;
 const assignments = mongoCollections.assignments;
 
 function addCourseToTeacher(teacherId, courseId) {
-	if (typeof teacherId != "string") {
+	if (typeof teacherId != "number") {
 		return Promise.reject("StudentId must be a string");
 	}
 	if (typeof courseId != "string") {
@@ -46,6 +46,32 @@ function addCourse(courseName, teacherId) {
 	});
 }
 
+// User: Teacher
+function addStudentsToCourse(studentIds, courseId) {
+    if (typeof studentIds != "object" && studentIds.length > 0) {
+        return Promise.reject("StudentId must be a string");
+    }
+    if (typeof courseId != "string") {
+        return Promise.reject("ClassId must be a string");
+    }
+
+    return courses().then((collection) => {
+        return collection.update({_id: courseId}, {$addToSet: {studentIDs: {$each: studentIds}}}).then(() => {
+            let courseInfo = {
+                courseId: courseId,
+                grade: NaN,
+                isCurrentlyTaking: true
+            }
+
+            return students().then((collection) => {
+                studentIds.forEach((studentId) => {
+                    collection.update({_id: studentId}, {$addToSet: {courses: courseInfo}});
+                });
+            });
+        });
+    });
+}
+
 function addAssignment(newAssignment) {
 	if (typeof newAssignment != "object") {
 		return Promise.reject("Assignment must be provided");
@@ -60,7 +86,15 @@ function addAssignment(newAssignment) {
 }
 
 function addAssignmentToCourse(courseId, assignmentId) {
-	return Promise.reject("Not yet implemented");
+	if (typeof courseId != "string") {
+		return Promise.reject("Course id must be given");
+	}
+	if (typeof assignmentId != "string") {
+		return Promise.reject("Assignment id must be given")
+	}
+	courses().then((collection) => {
+		return collection.update({_id: courseId},{$addToSet: {assignments: assignmentId}});
+	});
 }
 
 function updateCourseGrade(studentId, courseId, grade) {
@@ -120,38 +154,16 @@ module.exports = {
 		});
 	},
 	// User: Teacher
-	addStudentToCourse(studentId, courseId) {
-		if (typeof studentId != "string") {
-			return Promise.reject("StudentId must be a string");
-		}
-		if (typeof courseId != "string") {
-			return Promise.reject("ClassId must be a string");
-		}
-
-		return courses().then((collection) => {
-			return collection.update({_id: courseId}, {$addToSet: {studentIDs: studentId}}).then(() => {
-				let courseInfo = {
-					courseId: courseId,
-					grade: NaN,
-					isCurrentlyTaking: true
-				}
-
-				return students().then((collection) => {
-					return collection.update({_id: studentId}, {$addToSet: {courses: courseInfo}});
-				});
-			});
-		});
-	},
-	// User: Teacher
-	createCourseForTeacher(teacherId, courseName) {
+	createCourseForTeacher(teacherId, courseName, students) {
 		return addCourse(courseName, teacherId).then((courseId) => {
+			addStudentsToCourse(students,courseId);
 			return addCourseToTeacher(teacherId, courseId);
 		});
 	},
 	// User: Teacher
 	createAssignmentForCourse(courseId, newAssignment) {
-		return addAssigment(newAssignment).then((assignmentId) => {
-			return addAssignmentToCourse(courseId, assignmentId);
+		return addAssignment(newAssignment).then((assignment) => {
+			return addAssignmentToCourse(courseId, assignment.insertedId);
 		});
 	},
 	// User: Teacher || Student
@@ -159,7 +171,9 @@ module.exports = {
 	getAssignmentsForCourse(courseId) {
 		return courses().then((collection) => {
 			return collection.findOne({_id: courseId}).then((course) => {
-				return course.assignments;
+				return assignments().then((collection) => {
+					return collection.find({_id: {$in: course.assignments}}).toArray().then((assignments) => assignments);
+				});
 			});
 		});
 	},
@@ -231,7 +245,7 @@ module.exports = {
 	//User : Teacher || Student
 	getCourse(courseID) {
 		return courses().then((collection) => {
-			return collection.find({_id: courseID}).then((course) => {
+			return collection.findOne({_id: courseID}).then((course) => {
 				return course;
 			});
 		});
@@ -239,7 +253,7 @@ module.exports = {
 	//User: Teacher
 	getStudents(studentIds) {
 		return students().then((collection) => {
-			return collection.find({_id: {in: studentIds}}).toArray().then((students) => {
+			return collection.find({_id: {$in: studentIds}}).toArray().then((students) => {
 				return students;
 			})
 		});

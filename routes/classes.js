@@ -15,8 +15,11 @@ router.get("/", (req, res) => {
         });
     else
         db.getCoursesForTeacher(user._id).then((courses) => {
-            courses.isTeacher = true;
-            res.render('class/classList', courses)
+        let data ={
+            classes: courses,
+            isTeacher: true
+        }
+            res.render('class/classList', data);
         });
 });
 
@@ -37,12 +40,12 @@ router.get("/:classID", (req, res) => {
         res.redirect("/login");
         return;
     }
-    let courseID = user.courses[req.params.classID];
+    let courseID = user.courses[req.params.classID].courseId;
     db.getAssignmentsForCourse(courseID).then((assignments) => {
         let data ={};
         let assign = [];
         db.getCourse(courseID).then((course) => {
-            data.class = {id: req.params.classID, name: course.name};
+            data.class = {id: req.params.classID, name: course.courseName};
             if (user.isStudent) {
                 for (let x = 0; x < assignments.length; x++) {
                     let sub = assignments[x].submissions;
@@ -60,9 +63,9 @@ router.get("/:classID", (req, res) => {
                 data.assignments = assign;
                 res.render("class/class", data);
             } else {
-                db.getStudents(course.studentIDs).toArray().then((students) => {
+                db.getStudents(course.studentIDs).then((students) => {
                     let starr = students.map((s) => {
-                        return {_id: s.id, name: s.name, assignments: []}
+                        return {_id: s._id, name: `${s.firstName} ${s.lastName}`, assignments: []}
                     });
                     for (let x = 0; x < assignments.length; x++) {
                         let sub = assignments[x].submissions;
@@ -80,7 +83,7 @@ router.get("/:classID", (req, res) => {
                     }
                     data.isStudent = false;
                     data.assignments = assign;
-                    data.students = students;
+                    data.students = starr;
                     res.render("class/class", data);
                 });
             }
@@ -96,8 +99,8 @@ router.post("/", (req,res) => {
         return;
     }
     let name = req.body.name;
-    let students = req.body.ids;
-    db.createCourseForTeacher(name,students).then(()=> res.redirect("/class"));
+    let students = req.body.ids.map((x) => Number(x));
+    db.createCourseForTeacher(user._id,name,students).then(()=> res.redirect("/class"));
 
 });
 
@@ -142,7 +145,8 @@ router.post("/:classID", (req, res) => {
         return;
     }
     let data = req.body;
-    db.createAssignmentForCourse(req.body).then(() => res.redirect(`/class/${req.params.classID}`));
+    let courseID = user.courses[req.params.classID].courseId;
+    db.createAssignmentForCourse(courseID,req.body).then(() => res.redirect(`/class/${req.params.classID}`));
 });
 
 router.post("/:classID/:assignmentID", (req, res) => {
