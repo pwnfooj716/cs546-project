@@ -1,5 +1,9 @@
 <div>
     <ul id="class-list">
+        {{#if classes.length}}
+        {{else}}
+            No classes
+        {{/if}}
     {{#each classes}}
         <li class="class"><a href="/class/{{id}}">{{name}} {{semester}}</a></li>
     {{/each}}

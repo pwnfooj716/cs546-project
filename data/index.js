@@ -154,7 +154,7 @@ module.exports = {
 			return addAssignmentToCourse(courseId, assignmentId);
 		});
 	},
-	// User: Teacher || Studnet
+	// User: Teacher || Student
 	// Why do we need this?
 	getAssignmentsForCourse(courseId) {
 		return courses().then((collection) => {
@@ -199,6 +199,7 @@ module.exports = {
 	getCoursesForStudent(studentId) {
 		return getStudent(studentId).then((student) => {
 			let coursesIds = student.courses.map((x) => {return x.courseId});
+			if (coursesIds.length===0) return [];
 			return courses().then((collection) => {
 				return collection.find({_id: {$in: coursesIds}}, {courseName: 1}).then((courses) => {
 					if (courses.length != student.courses.length) throw ("courses missing");
@@ -226,5 +227,76 @@ module.exports = {
 				});
 			});
 		});
-	}
+	},
+	//User : Teacher || Student
+	getCourse(courseID) {
+		return courses().then((collection) => {
+			return collection.find({_id: courseID}).then((course) => {
+				return course;
+			});
+		});
+	},
+	//User: Teacher
+	getStudents(studentIds) {
+		return students().then((collection) => {
+			return collection.find({_id: {in: studentIds}}).toArray().then((students) => {
+				return students;
+			})
+		});
+	},
+	//User: Student || Teacher
+	checkAuth(id, username) {
+		return students().then((collection)=> {
+			return collection.find({$or: [{_id: id}, {username: username}]}).toArray().then((results)=> {
+				if (results.length)
+					throw "user already exists";
+				else
+                    return teachers().then((collection) => {
+                        return collection.find({$or: [{_id: id}, {username: username}]}).toArray().then((results)=> {
+                            if (results.length)
+                                throw "user already exists";
+
+                            return true;
+                        });
+                    });
+			});
+		});
+	},
+	//User: Student || Teacher
+	getAuthByUsername(username) {
+        return students().then((collection)=> {
+            return collection.findOne({username: username}).then((user)=> {
+                if (user) {
+                	user.isStudent = true;
+                    return user;
+                }
+                else
+                    return teachers().then((collection) => {
+                    	return collection.findOne({username: username}).then((user)=> {
+                    		if (user)
+                    			user.isTeacher = true;
+                        	return user;
+                    });
+                });
+            });
+        });
+	},
+    getAuthByID(id) {
+        return students().then((collection)=> {
+            return collection.findOne({_id: id}).then((user)=> {
+                if (user) {
+                    user.isStudent = true;
+                    return user;
+                }
+                else
+                    return teachers().then((collection) => {
+                        return collection.findOne({_id: id}).then((user)=> {
+                            if (user)
+                                user.isTeacher = true;
+                            return user;
+                        });
+                    });
+            });
+        });
+    }
 }
