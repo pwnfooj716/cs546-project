@@ -109,7 +109,27 @@ function addAssignmentToCourse(courseId, assignmentId) {
 }
 
 function updateCourseGrade(studentId, courseId, grade) {
-	return Promise.reject("Not yet implemented");
+	return students().then((collection) => {
+		return collection.update({_id: studentId, courses: {$elemMatch: {courseId: courseId}}},
+								 {$set: {"courses.$.grade": grade}});
+	});
+}
+
+function calculateAndUpdateCourseGrade(studentId, courseId) {
+	return getCourse(courseId).then((course) => {
+		let grade = 0;
+		return module.exports.getAssignmentsForCourse(courseId).then((assignments) => {
+			assignments.forEach((assignment) => {
+				assignment.submissions.forEach((submission) => {
+					if (submission.studentId === studentId) {
+						grade += submission.grade;
+					}
+				});
+			});
+			grade /= assignments.length;
+			return updateCourseGrade(studentId, courseId, grade);
+		});
+	});
 }
 
 function getStudent(studentId) {
@@ -205,7 +225,7 @@ module.exports = {
 	// User: Teacher
 	createCourseForTeacher(teacherId, courseName, students) {
 		return addCourse(courseName, teacherId).then((courseId) => {
-			addStudentsToCourse(students,courseId);
+			addStudentsToCourse(students, courseId);
 			return addCourseToTeacher(teacherId, courseId);
 		});
 	},
@@ -216,7 +236,6 @@ module.exports = {
 		});
 	},
 	// User: Teacher || Student
-	// Why do we need this?
 	getAssignmentsForCourse(courseId) {
 		return courses().then((collection) => {
 			return collection.findOne({_id: courseId}).then((course) => {
