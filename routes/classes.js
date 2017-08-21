@@ -150,7 +150,8 @@ router.post("/:classID", (req, res) => {
     }
     let data = req.body;
     let courseID = user.courses[req.params.classID].courseId;
-    db.createAssignmentForCourse(courseID,data).then(() => res.redirect(`/class/${req.params.classID}`));
+    db.createAssignmentForCourse(courseID, data.name, data.prompt,
+								 data.dueDate).then(() => res.redirect(`/class/${req.params.classID}`));
 });
 
 router.post("/:classID/:assignmentID", (req, res) => {

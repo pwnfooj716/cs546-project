@@ -72,13 +72,18 @@ function addStudentsToCourse(studentIds, courseId) {
     });
 }
 
-function addAssignment(newAssignment) {
+function addAssignment(assignmentName, prompt, dueDate) {
 	if (typeof newAssignment != "object") {
 		return Promise.reject("Assignment must be provided");
 	}
 
-	newAssignment._id = uuid();
-	newAssignment.submissions = [];
+	let newAssignment = {
+		_id: uuid(),
+		assignmentName: assignmentName,
+		prompt: prompt,
+		dueDate: dueDate,
+		submissions: []
+	};
 	
 	return assignments().then((collection) => {
 		return collection.insertOne(newAssignment);
@@ -130,24 +135,38 @@ function getCourse(courseId) {
 
 module.exports = {
 	// User: Teacher
-	addStudent(newStudent) {
+	addStudent(studentId, firstName, lastName, username, hashedPassword) {
 		if (typeof newStudent != "object") {
 			return Promise.reject("Student must be provided");
 		}
 
-		newStudent.courses = [];
+		let newStudent = {
+			_id: studentId,
+			firstName: firstName,
+			lastName: lastName,
+			username: username,
+			hashedPassword: hashedPassword,
+			courses: []
+		};
 
 		return students().then((collection) => {
 			return collection.insertOne(newStudent);
 		});
 	},
 	// User: Teacher
-	addTeacher(newTeacher) {
+	addTeacher(teacherId, firstName, lastName, username, hashedPassword) {
 		if (typeof newTeacher != "object") {
 			return Promise.reject("Teacher must be provided");
 		}
 
-		newTeacher.courses = [];
+		let newTeacher = {
+			_id: teacherId,
+			firstName: firstName,
+			lastName: lastName,
+			username: username,
+			hashedPassword: hashedPassword,
+			courses: []
+		};
 
 		return teachers().then((collection) => {
 			return collection.insertOne(newTeacher);
@@ -161,8 +180,8 @@ module.exports = {
 		});
 	},
 	// User: Teacher
-	createAssignmentForCourse(courseId, newAssignment) {
-		return addAssignment(newAssignment).then((assignment) => {
+	createAssignmentForCourse(courseId, assignmentName, prompt, dueDate) {
+		return addAssignment(assignmentName, prompt, dueDate).then((assignment) => {
 			return addAssignmentToCourse(courseId, assignment.insertedId);
 		});
 	},
