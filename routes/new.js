@@ -41,10 +41,10 @@ router.post("/student", (req, res) => {
         return;
     }
     student._id = Number(student._id);
-    student.password = bcrypt.hashSync(student.password, 8);
-    db.checkAuth(student._id, student.username).then(()=> {
+    student.hashedPassword = bcrypt.hashSync(student.password, 8);
+    db.checkAuth(student._id, student.username).then(() => {
         db.addStudent(student._id, student.firstName, student.lastName,
-					  student.username, student.password).then(() => res.redirect("/login"));
+					  student.username, student.hashedPassword).then(() => res.redirect("/login"));
     }).catch((err) => {
         res.render("login/student", {hasErrors: true, errors: [err]});
     });
@@ -81,9 +81,9 @@ router.post("/teacher", (req, res) => {
     }
     teacher._id = Number(teacher._id);
     teacher.password = bcrypt.hashSync(teacher.password,8);
-    db.checkAuth(teacher._id, teacher.username).then(()=> {
+    db.checkAuth(teacher._id, teacher.username).then(() => {
         db.addTeacher(teacher._id, teacher.firstName, teacher.lastName,
-					  teacher.username, teacher.password).then(()=> res.redirect("/login"));
+					  teacher.username, teacher.password).then(() => res.redirect("/login"));
     }).catch((err) => {
         res.render("login/teacher", {hasErrors: true, errors: [err]});
     });

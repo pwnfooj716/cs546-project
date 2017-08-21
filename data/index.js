@@ -73,8 +73,14 @@ function addStudentsToCourse(studentIds, courseId) {
 }
 
 function addAssignment(assignmentName, prompt, dueDate) {
-	if (typeof newAssignment != "object") {
-		return Promise.reject("Assignment must be provided");
+	if (typeof assignmentName != "string") {
+		return Promise.reject("Assignment name must be provided");
+	}
+	if (typeof prompt != "string") {
+		return Promise.reject("Prompt must be provided");
+	}
+	if (typeof dueDate != "string") {
+		return Promise.reject("Due date must be provided");
 	}
 
 	let newAssignment = {
@@ -134,10 +140,22 @@ function getCourse(courseId) {
 }
 
 module.exports = {
-	// User: Teacher
+	// User: Student
 	addStudent(studentId, firstName, lastName, username, hashedPassword) {
-		if (typeof newStudent != "object") {
-			return Promise.reject("Student must be provided");
+		if (typeof studentId != "number") {
+			return Promise.reject("Student ID must be provided");
+		}
+		if (typeof firstName != "string") {
+			return Promise.reject("First name must be provided");
+		}
+		if (typeof lastName != "string") {
+			return Promise.reject("Last name must be provided");
+		}
+		if (typeof username != "string") {
+			return Promise.reject("Username must be provided");
+		}
+		if (typeof hashedPassword != "string") {
+			return Promise.reject("Hashed password must be provided");
 		}
 
 		let newStudent = {
@@ -155,8 +173,20 @@ module.exports = {
 	},
 	// User: Teacher
 	addTeacher(teacherId, firstName, lastName, username, hashedPassword) {
-		if (typeof newTeacher != "object") {
-			return Promise.reject("Teacher must be provided");
+		if (typeof teacherId != "number") {
+			return Promise.reject("Student ID must be provided");
+		}
+		if (typeof firstName != "string") {
+			return Promise.reject("First name must be provided");
+		}
+		if (typeof lastName != "string") {
+			return Promise.reject("Last name must be provided");
+		}
+		if (typeof username != "string") {
+			return Promise.reject("Username must be provided");
+		}
+		if (typeof hashedPassword != "string") {
+			return Promise.reject("Hashed password must be provided");
 		}
 
 		let newTeacher = {
