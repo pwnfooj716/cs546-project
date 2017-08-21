@@ -43,7 +43,7 @@ router.get("/:classID", (req, res) => {
     }
     let courseID = user.courses[req.params.classID].courseId;
     db.getAssignmentsForCourse(courseID).then((assignments) => {
-        let data ={};
+        let data = {};
         let assign = [];
         db.getCourse(courseID).then((course) => {
             data.class = {id: req.params.classID, name: course.courseName};

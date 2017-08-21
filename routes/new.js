@@ -14,7 +14,7 @@ router.get("/teacher", (req, res) => {
 router.post("/student", (req, res) => {
     //create student here
     let student = req.body;
-    let errors= [];
+    let errors = [];
     let hasError = false;
     if (!student._id) {
         hasError=true;
@@ -52,7 +52,7 @@ router.post("/student", (req, res) => {
 router.post("/teacher", (req, res) => {
     //create teacher here
     let teacher = req.body;
-    let errors= [];
+    let errors = [];
     let hasError = false;
     if (!teacher._id) {
         hasError=true;
