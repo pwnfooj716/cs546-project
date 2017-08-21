@@ -80,10 +80,10 @@ router.post("/teacher", (req, res) => {
         return;
     }
     teacher._id = Number(teacher._id);
-    teacher.password = bcrypt.hashSync(teacher.password,8);
+    teacher.hashedPassword = bcrypt.hashSync(teacher.password,8);
     db.checkAuth(teacher._id, teacher.username).then(() => {
         db.addTeacher(teacher._id, teacher.firstName, teacher.lastName,
-					  teacher.username, teacher.password).then(() => res.redirect("/login"));
+					  teacher.username, teacher.hashedPassword).then(() => res.redirect("/login"));
     }).catch((err) => {
         res.render("login/teacher", {hasErrors: true, errors: [err]});
     });
