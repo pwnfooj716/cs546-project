@@ -1,7 +1,14 @@
 <div>
     <ul id="class-list">
+        {{#if classes.length}}
+        {{else}}
+            No classes
+        {{/if}}
     {{#each classes}}
-        <li class="class"><a href="/class/{{id}}">{{name}} {{semester}}</a></li>
+        <li class="class"><a href="/class/{{index}}">{{name}} {{semester}}</a></li>
     {{/each}}
     </ul>
+    {{#if isTeacher}}
+        <a href="/class/new">Create a Class</a>
+    {{/if}}
 </div>

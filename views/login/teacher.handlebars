@@ -1,18 +1,27 @@
 <form method="POST" action="/new/teacher">
     <h1>Teacher Creation</h1>
-    <label for="teacherID">Student ID</label>
-    <input id="teacherID" type="text" pattern="[0-9]+{8}" placeholder="10000000">
+    <label for="teacherID">Teacher ID</label>
+    <input id="teacherID" name="_id" type="number" pattern="[0-9]+{8}" placeholder="10000000" required>
     <label for="first-name">First Name</label>
-    <input id="first-name" type="text" placeholder="First Name">
+    <input id="first-name" name="firstName" type="text" placeholder="First Name" required>
     <label for="last-name">Last Name</label>
-    <input id="last-name" type="text" placeholder="Last Name">
+    <input id="last-name" name="lastName" type="text" placeholder="Last Name" required>
     <label for="username">Username</label>
-    <input id="username" type="text" placeholder="Username">
+    <input id="username" name="username" type="text" placeholder="Username" required>
     <label for="password">Password</label>
-    <input id="password" type="password" placeholder="Password">
+    <input id="password" name="password" type="password" placeholder="Password" required>
     <label for="confirm-password">Confirmed Password</label>
-    <input id="confirm-password" type="password" placeholder="Confirm Password">
+    <input id="confirm-password" type="password" placeholder="Confirm Password" required>
     <button type="submit">Create</button>
 </form>
+{{#if hasErrors}}
+    <ul class="error-list">
+        {{#each errors}}
+            <li>
+                {{this}}
+            </li>
+        {{/each}}
+    </ul>
+{{/if}}
 <a href="/login">Back To Login</a>
 <script src="/public/js/teacher.js"></script>
