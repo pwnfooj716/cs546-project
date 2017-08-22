@@ -392,26 +392,3 @@ module.exports = {
 		});
 	}
 }
-
-
-function clearDB() {
-	return students().then((collection) => {
-		return collection.remove({}).then(() => {
-			return teachers().then((collection) => {
-				return collection.remove({}).then(() => {
-					return courses().then((collection) => {
-						return collection.remove({}).then(() => {
-							return assignments().then((collection) => {
-								return collection.remove({});
-							});
-						});
-					})
-				});
-			});
-		});
-	});
-}
-
-// clearDB().then(() => {
-// 	console.log("cleared");
-// });
