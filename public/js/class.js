@@ -26,7 +26,11 @@
                 name: name.value,
                 ids: arr
             }
-            $.post("/class", data);
+            $.post("/class", data, function(data) {
+                window.location.replace("/class");
+            }).fail(()=> {
+                alert("fail");
+            });
         })
     }
 })();
