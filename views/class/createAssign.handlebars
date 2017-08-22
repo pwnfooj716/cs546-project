@@ -1,0 +1,11 @@
+<form method="POST" action="/class/{{classId}}">
+    <h1>Assignment Creation</h1>
+    <label for="name">Assignment Name</label>
+    <input id="name" name="name" type="text" placeholder="assignment name">
+    <label for="prompt">Prompt</label>
+    <textarea id="prompt" name="prompt" placeholder="insert prompt here"></textarea>
+    <label for="due-date">Due date</label>
+    <input id="due-date" name="dueDate" type="datetime">
+    <button type="submit">Create</button>
+</form>
+<a href="/class/{{classId}}">Back To Class</a>
