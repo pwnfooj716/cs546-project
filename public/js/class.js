@@ -7,7 +7,7 @@
         const addS = document.getElementById("add-student");
         const students = document.getElementById("students");
         addS.addEventListener("click", () =>{
-			let text = idbox.value;
+            let text = idbox.value;
             let exist = arr.find((x) => (x === text));
             if (!exist) {
                 arr.push(text);
