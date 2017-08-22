@@ -64,9 +64,7 @@ function addStudentsToCourse(studentIds, courseId) {
 			}
 
 			return students().then((collection) => {
-				studentIds.forEach((studentId) => {
-					collection.update({_id: studentId}, {$addToSet: {courses: courseInfo}});
-				});
+				return collection.update({_id: {$in: studentIds}}, {$addToSet: {courses: courseInfo}});
 			});
 		});
 	});
@@ -106,7 +104,7 @@ function addAssignmentToCourse(courseId, assignmentId) {
 	
 	return courses().then((collection) => {
 		return collection.findOneAndUpdate({_id: courseId}, {$addToSet: {assignments: assignmentId}}).then((course) => {
-			assignments().then((assCollection) => {
+			return assignments().then((assCollection) => {
 				let newSubmissions = [];
 				course.value.studentIDs.forEach((studentId) => {
 					newSubmissions.push({
@@ -117,9 +115,10 @@ function addAssignmentToCourse(courseId, assignmentId) {
 						teacherResponse: undefined
 					});
 				});
-				assCollection.update({_id: assignmentId}, {$addToSet: {submissions: {$each: newSubmissions}}});
+				return assCollection.update({_id: assignmentId}, {$addToSet: {submissions: {$each: newSubmissions}}}).then(() => {
+					return assignmentId;
+				});
 			});
-			return assignmentId;
 		});
 	});
 }
