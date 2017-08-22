@@ -40,7 +40,6 @@ router.post("/student", (req, res) => {
         res.render("login/student", {hasErrors: true, errors: errors});
         return;
     }
-    student._id = Number(student._id);
     student.hashedPassword = bcrypt.hashSync(student.password, 8);
     db.checkAuth(student._id, student.username).then(() => {
         db.addStudent(student._id, student.firstName, student.lastName,
@@ -79,7 +78,6 @@ router.post("/teacher", (req, res) => {
         res.render("login/teacher", {hasErrors: true, errors: errors});
         return;
     }
-    teacher._id = Number(teacher._id);
     teacher.hashedPassword = bcrypt.hashSync(teacher.password,8);
     db.checkAuth(teacher._id, teacher.username).then(() => {
         db.addTeacher(teacher._id, teacher.firstName, teacher.lastName,

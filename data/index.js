@@ -7,7 +7,7 @@ const courses = mongoCollections.courses;
 const assignments = mongoCollections.assignments;
 
 function addCourseToTeacher(teacherId, courseId) {
-	if (typeof teacherId != "number") {
+	if (typeof teacherId != "string") {
 		return Promise.reject("StudentId must be a string");
 	}
 	if (typeof courseId != "string") {
@@ -48,28 +48,28 @@ function addCourse(courseName, teacherId) {
 
 // User: Teacher
 function addStudentsToCourse(studentIds, courseId) {
-    if (typeof studentIds != "object" && studentIds.length > 0) {
-        return Promise.reject("StudentId must be a string");
-    }
-    if (typeof courseId != "string") {
-        return Promise.reject("ClassId must be a string");
-    }
+	if (typeof studentIds != "object" && studentIds.length > 0) {
+		return Promise.reject("StudentId must be a string");
+	}
+	if (typeof courseId != "string") {
+		return Promise.reject("ClassId must be a string");
+	}
 
-    return courses().then((collection) => {
-        return collection.update({_id: courseId}, {$addToSet: {studentIDs: {$each: studentIds}}}).then(() => {
-            let courseInfo = {
-                courseId: courseId,
-                grade: NaN,
-                isCurrentlyTaking: true
-            }
+	return courses().then((collection) => {
+		return collection.update({_id: courseId}, {$addToSet: {studentIDs: {$each: studentIds}}}).then(() => {
+			let courseInfo = {
+				courseId: courseId,
+				grade: NaN,
+				isCurrentlyTaking: true
+			}
 
-            return students().then((collection) => {
-                studentIds.forEach((studentId) => {
-                    collection.update({_id: studentId}, {$addToSet: {courses: courseInfo}});
-                });
-            });
-        });
-    });
+			return students().then((collection) => {
+				studentIds.forEach((studentId) => {
+					collection.update({_id: studentId}, {$addToSet: {courses: courseInfo}});
+				});
+			});
+		});
+	});
 }
 
 function addAssignment(assignmentName, prompt, dueDate) {
@@ -103,8 +103,24 @@ function addAssignmentToCourse(courseId, assignmentId) {
 	if (typeof assignmentId != "string") {
 		return Promise.reject("Assignment id must be given")
 	}
-	courses().then((collection) => {
-		return collection.update({_id: courseId},{$addToSet: {assignments: assignmentId}});
+	
+	return courses().then((collection) => {
+		return collection.findOneAndUpdate({_id: courseId}, {$addToSet: {assignments: assignmentId}}).then((course) => {
+			assignments().then((assCollection) => {
+				let newSubmissions = [];
+				course.value.studentIDs.forEach((studentId) => {
+					newSubmissions.push({
+						studentId: studentId,
+						grade: NaN,
+						submissionDate: undefined,
+						submission: undefined,
+						teacherResponse: undefined
+					});
+				});
+				assCollection.update({_id: assignmentId}, {$addToSet: {submissions: {$each: newSubmissions}}});
+			});
+			return assignmentId;
+		});
 	});
 }
 
@@ -133,21 +149,21 @@ function calculateAndUpdateCourseGrade(studentId, courseId) {
 }
 
 function getStudent(studentId) {
-    return students().then((collection) => {
-        return collection.findOne({ _id: studentId }).then((student) => {
-        	if (!student) throw "student not found";
-        	return student;
+	return students().then((collection) => {
+		return collection.findOne({ _id: studentId }).then((student) => {
+			if (!student) throw "student not found";
+			return student;
 		})
-    });
+	});
 }
 
 function getTeacher(teacherId) {
-    return teachers().then((collection) => {
-        return collection.findOne({ _id: teacherId }).then((teacher) => {
-            if (!teacher) throw "teacher not found";
-            return teacher;
-        })
-    });
+	return teachers().then((collection) => {
+		return collection.findOne({ _id: teacherId }).then((teacher) => {
+			if (!teacher) throw "teacher not found";
+			return teacher;
+		})
+	});
 }
 
 function getCourse(courseId) {
@@ -159,10 +175,18 @@ function getCourse(courseId) {
 	});
 }
 
+function getAssignment(assignmentId) {
+	return assignments().then((collection) => {
+		return collection.findOne({_id: assignmentId}).then((assignment) => {
+			return assignment;
+		});
+	});
+}
+
 module.exports = {
 	// User: Student
 	addStudent(studentId, firstName, lastName, username, hashedPassword) {
-		if (typeof studentId != "number") {
+		if (typeof studentId != "string") {
 			return Promise.reject("Student ID must be provided");
 		}
 		if (typeof firstName != "string") {
@@ -193,7 +217,7 @@ module.exports = {
 	},
 	// User: Teacher
 	addTeacher(teacherId, firstName, lastName, username, hashedPassword) {
-		if (typeof teacherId != "number") {
+		if (typeof teacherId != "string") {
 			return Promise.reject("Student ID must be provided");
 		}
 		if (typeof firstName != "string") {
@@ -225,8 +249,9 @@ module.exports = {
 	// User: Teacher
 	createCourseForTeacher(teacherId, courseName, students) {
 		return addCourse(courseName, teacherId).then((courseId) => {
-			addStudentsToCourse(students, courseId);
-			return addCourseToTeacher(teacherId, courseId);
+			return addStudentsToCourse(students, courseId).then(() => {
+				return addCourseToTeacher(teacherId, courseId);
+			});
 		});
 	},
 	// User: Teacher
@@ -254,34 +279,24 @@ module.exports = {
 	// User: Teacher
 	updateAssignmentGrade(studentId, assignmentId, grade, teacherResponse) {
 		return assignments().then((collection) => {
-			return collection.findOne({ _id: assignmentId }).then((assignment) => {
-				assignment.submissions.forEach((submission) => {
-					if (submission.studentId === studentId) {
-						submission.grade = grade;
-						submission.teacherResponse = teacherResponse;
-					}
-				});
-			});
+			return collection.update({_id: assignmentId, submissions: {$elemMatch: {studentId: studentId}}},
+									 {$set: {"submissions.$.grade": grade,
+											 "submissions.$.teacherResponse": teacherResponse}});
 		});
 	},
 	// User: Student
 	updateAssignmentSubmission(studentId, assignmentId, submission) {
 		return assignments().then((collection) => {
-			return collection.findOne({ _id: assignmentId }).then((assignment) => {
-				assignment.submissions.forEach((submission) => {
-					if (submission.studentId === studentId) {
-						submission.submission = submission;
-						submission.submissionDate = new Date();// current date
-					}
-				});
-			});
+			return collection.update({_id: assignmentId, submissions: {$elemMatch: {studentId: studentId}}},
+									 {$set: {"submissions.$.submission": submission,
+											 "submissions.$.submissionDate": new Date()}});
 		});
 	},
 	// User : Student 
 	getCoursesForStudent(studentId) {
 		return getStudent(studentId).then((student) => {
 			let coursesIds = student.courses.map((x) => {return x.courseId});
-			if (coursesIds.length===0) return [];
+			if (coursesIds.length === 0) return [];
 			return courses().then((collection) => {
 				return collection.find({_id: {$in: coursesIds}}, {courseName: 1}).toArray().then((courses) => {
 					if (courses.length != student.courses.length) throw ("courses missing");
@@ -311,13 +326,7 @@ module.exports = {
 		});
 	},
 	//User : Teacher || Student
-	getCourse(courseID) {
-		return courses().then((collection) => {
-			return collection.findOne({_id: courseID}).then((course) => {
-				return course;
-			});
-		});
-	},
+	getCourse: getCourse,
 	//User: Teacher
 	getStudents(studentIds) {
 		return students().then((collection) => {
@@ -330,55 +339,79 @@ module.exports = {
 	checkAuth(id, username) {
 		return students().then((collection)=> {
 			return collection.find({$or: [{_id: id}, {username: username}]}).toArray().then((results)=> {
-				if (results.length)
+				if (results.length) {
 					throw "user already exists";
-				else
-                    return teachers().then((collection) => {
-                        return collection.find({$or: [{_id: id}, {username: username}]}).toArray().then((results)=> {
-                            if (results.length)
-                                throw "user already exists";
+				} else {
+					return teachers().then((collection) => {
+						return collection.find({$or: [{_id: id}, {username: username}]}).toArray().then((results)=> {
+							if (results.length)
+								throw "user already exists";
 
-                            return true;
-                        });
-                    });
+							return true;
+						});
+					});
+				}
 			});
 		});
 	},
 	//User: Student || Teacher
 	getAuthByUsername(username) {
-        return students().then((collection)=> {
-            return collection.findOne({username: username}).then((user)=> {
-                if (user) {
-                	user.isStudent = true;
-                    return user;
-                }
-                else
-                    return teachers().then((collection) => {
-                    	return collection.findOne({username: username}).then((user)=> {
-                    		if (user)
-                    			user.isTeacher = true;
-                        	return user;
-                    });
-                });
-            });
-        });
+		return students().then((collection)=> {
+			return collection.findOne({username: username}).then((user)=> {
+				if (user) {
+					user.isStudent = true;
+					return user;
+				} else {
+					return teachers().then((collection) => {
+						return collection.findOne({username: username}).then((user)=> {
+							if (user)
+								user.isTeacher = true;
+							return user;
+						});
+					});
+				}
+			});
+		});
 	},
-    getAuthByID(id) {
-        return students().then((collection)=> {
-            return collection.findOne({_id: id}).then((user)=> {
-                if (user) {
-                    user.isStudent = true;
-                    return user;
-                }
-                else
-                    return teachers().then((collection) => {
-                        return collection.findOne({_id: id}).then((user)=> {
-                            if (user)
-                                user.isTeacher = true;
-                            return user;
-                        });
-                    });
-            });
-        });
-    }
+	getAuthByID(id) {
+		return students().then((collection)=> {
+			return collection.findOne({_id: id}).then((user)=> {
+				if (user) {
+					user.isStudent = true;
+					return user;
+				} else {
+					return teachers().then((collection) => {
+						return collection.findOne({_id: id}).then((user)=> {
+							if (user)
+								user.isTeacher = true;
+							return user;
+						});
+					});
+				}
+			});
+		});
+	}
 }
+
+
+function clearDB() {
+	return students().then((collection) => {
+		return collection.remove({}).then(() => {
+			return teachers().then((collection) => {
+				return collection.remove({}).then(() => {
+					return courses().then((collection) => {
+						return collection.remove({}).then(() => {
+							return assignments().then((collection) => {
+								return collection.remove({});
+							});
+						});
+					})
+				});
+			});
+		});
+	});
+}
+
+// clearDB().then(() => {
+// 	console.log("cleared");
+// });

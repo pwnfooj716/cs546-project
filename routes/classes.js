@@ -9,19 +9,20 @@ router.get("/", (req, res) => {
         res.redirect('/login');
         return;
     }
-    if (user.isStudent)
+    if (user.isStudent) {
         db.getCoursesForStudent(user._id).then((courses) => {
 
             res.render('class/classList', {classes: courses});
         });
-    else
+	} else {
         db.getCoursesForTeacher(user._id).then((courses) => {
-        let data ={
-            classes: courses,
-            isTeacher: true
-        }
+			let data = {
+				classes: courses,
+				isTeacher: true
+			}
             res.render('class/classList', data);
         });
+	}
 });
 
 router.get("/new", (req,res) => {
@@ -57,7 +58,7 @@ router.get("/:classID", (req, res) => {
                     });
                     assign.push({
                         id: x,
-                        name: assignments[x].name,
+                        assignmentName: assignments[x].assignmentName,
                         grade: submission.grade,
                         dueDate: assignments[x].dueDate
                     });
@@ -73,15 +74,15 @@ router.get("/:classID", (req, res) => {
                     for (let x = 0; x < assignments.length; x++) {
                         let sub = assignments[x].submissions;
                         sub.forEach((s) => {
-                            for (let y= 0;y<starr.length; y++) {
-                                if (starr[x]._id === s.studentID){
-                                    starr[x].assignments.push(s.grade);
+                            for (let y = 0; y < starr.length; y++) {
+                                if (starr[y]._id === s.studentID){
+                                    starr[y].assignments.push(s.grade);
                                 }
                             }
                         });
                         assign.push({
                             id: x,
-                            name: assignments[x].name
+                            name: assignments[x].assignmentName
                         });
                     }
                     data.isStudent = false;
@@ -102,8 +103,8 @@ router.post("/", (req,res) => {
         return;
     }
     let name = req.body.name;
-    let students = req.body.ids.map((x) => Number(x));
-    db.createCourseForTeacher(user._id,name,students).then(()=> res.redirect("/class"));
+	let students = req.body.ids;
+    db.createCourseForTeacher(user._id, name, students).then(()=> res.redirect("/class"));
 
 });
 
@@ -128,7 +129,7 @@ router.get("/:classID/:assignmentID", (req,res) => {
     let classID = req.params.classID;
     let assignmentID = req.params.assignmentID;
     db.getAssignmentsForCourse(user.courses[classID].courseId).then((assignments)=> {
-        if (assignments.length< assignmentID) {
+        if (assignments.length < assignmentID) {
             res.redirect(`/${classID}`);
             return;
         }
