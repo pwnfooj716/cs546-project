@@ -17,36 +17,36 @@ router.post("/student", (req, res) => {
     let errors = [];
     let hasError = false;
     if (!student._id) {
-        hasError=true;
+        hasError = true;
         errors.push("no id");
     }
     if (!student.username) {
-        hasError=true;
+        hasError = true;
         errors.push("no username");
     }
     if (!student.firstName) {
-        hasError=true;
+        hasError = true;
         errors.push("no first name");
     }
     if (!student.lastName) {
-        hasError=true;
+        hasError = true;
         errors.push("no last name");
     }
     if (!student.password) {
-        hasError=true;
+        hasError = true;
         errors.push("no password");
     }
     if (hasError) {
         res.render("login/student", {hasErrors: true, errors: errors});
         return;
     }
-    student._id = Number(student._id);
-    student.password = bcrypt.hashSync(student.password,8);
-    db.checkAuth(student._id, student.username).then(()=> {
-        db.addStudent(student).then(() => res.redirect("/login"));
-    }).catch((err)=> {
+    student.hashedPassword = bcrypt.hashSync(student.password, 8);
+    db.checkAuth(student._id, student.username).then(() => {
+        db.addStudent(student._id, student.firstName, student.lastName,
+					  student.username, student.hashedPassword).then(() => res.redirect("/login"));
+    }).catch((err) => {
         res.render("login/student", {hasErrors: true, errors: [err]});
-    })
+    });
 });
 
 router.post("/teacher", (req, res) => {
@@ -55,34 +55,34 @@ router.post("/teacher", (req, res) => {
     let errors = [];
     let hasError = false;
     if (!teacher._id) {
-        hasError=true;
+        hasError = true;
         errors.push("no id");
     }
     if (!teacher.username) {
-        hasError=true;
+        hasError = true;
         errors.push("no username");
     }
     if (!teacher.firstName) {
-        hasError=true;
+        hasError = true;
         errors.push("no first name");
     }
     if (!teacher.lastName) {
-        hasError=true;
+        hasError = true;
         errors.push("no last name");
     }
     if (!teacher.password) {
-        hasError=true;
+        hasError = true;
         errors.push("no password");
     }
     if (hasError) {
         res.render("login/teacher", {hasErrors: true, errors: errors});
         return;
     }
-    teacher._id = Number(teacher._id);
-    teacher.password = bcrypt.hashSync(teacher.password,8);
-    db.checkAuth(teacher._id, teacher.username).then(()=> {
-        db.addTeacher(teacher).then(()=> res.redirect("/login"));
-    }).catch((err)=> {
+    teacher.hashedPassword = bcrypt.hashSync(teacher.password,8);
+    db.checkAuth(teacher._id, teacher.username).then(() => {
+        db.addTeacher(teacher._id, teacher.firstName, teacher.lastName,
+					  teacher.username, teacher.hashedPassword).then(() => res.redirect("/login"));
+    }).catch((err) => {
         res.render("login/teacher", {hasErrors: true, errors: [err]});
     });
 });

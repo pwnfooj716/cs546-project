@@ -14,7 +14,7 @@ passport.use(new LocalStrategy(
     function(username, password, done) {
             db.getAuthByUsername(username).then((user) => {
                 if (!user) return done(null, false, {message: "user not found"});
-                bcrypt.compare(password, user.password, (err, res) => {
+                bcrypt.compare(password, user.hashedPassword, (err, res) => {
                     if (err) return done(err);
                     if (!res) return done(null, false, {message: "password does not match"});
                     return done(null, user);

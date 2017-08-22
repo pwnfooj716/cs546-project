@@ -6,9 +6,9 @@
         const idbox = document.getElementById("student");
         const addS = document.getElementById("add-student");
         const students = document.getElementById("students");
-        addS.addEventListener("click",() =>{
-            let text = Number(idbox.value);
-            let exist = arr.find((x)=> (x === text));
+        addS.addEventListener("click", () =>{
+            let text = idbox.value;
+            let exist = arr.find((x) => (x === text));
             if (!exist) {
                 arr.push(text);
                 let newLi = document.createElement("li");
@@ -20,13 +20,13 @@
                 idbox.value = "";
             }
         });
-        form.addEventListener("submit",(e) => {
+        form.addEventListener("submit", (e) => {
             e.preventDefault();
             let data = {
                 name: name.value,
                 ids: arr
             }
-            $.post("/class",data);
+            $.post("/class", data);
         })
     }
 })();
