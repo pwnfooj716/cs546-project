@@ -35,6 +35,26 @@ router.get("/new", (req,res) => {
     res.render('class/createClass');
 });
 
+router.get("/student", (req,res) => {
+   //checks if student exists
+    let user = req.user;
+    if (!user) {
+        res.redirect("/login");
+        return;
+    }
+    if (!req.query.student)
+    {
+        res.json({isStudent: false});
+        return;
+    }
+    db.getStudents([req.query.student]).then((result) => {
+        if (result.length > 0)
+            res.json({isStudent: true});
+        else
+            res.json({isStudent: false});
+    });
+});
+
 router.get("/:classID", (req, res) => {
     //get class info based on class ID
     let user = req.user;
