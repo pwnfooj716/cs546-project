@@ -95,7 +95,7 @@ router.get("/:classID", (req, res) => {
                         let sub = assignments[x].submissions;
                         sub.forEach((s) => {
                             for (let y = 0; y < starr.length; y++) {
-                                if (starr[y]._id === s.studentID){
+                                if (starr[y]._id === s.studentId){
                                     starr[y].assignments.push(s.grade);
                                 }
                             }
@@ -186,10 +186,6 @@ router.get("/:classID/:assignmentID/:studentID", (req,res) => {
         };
         res.render('class/assign', data);
     });
-    let data = {
-        isTeacher: true
-    }
-    res.render('class/assign');
 });
 
 router.post("/:classID", (req, res) => {
