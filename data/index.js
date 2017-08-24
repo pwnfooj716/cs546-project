@@ -70,7 +70,7 @@ function addStudentsToCourse(studentIds, courseId) {
 	});
 }
 
-function addAssignment(assignmentName, prompt, dueDate, classID) {
+function addAssignment(assignmentName, prompt, dueDate) {
 	if (typeof assignmentName != "string") {
 		return Promise.reject("Assignment name must be provided");
 	}
@@ -255,7 +255,7 @@ module.exports = {
 	},
 	// User: Teacher
 	createAssignmentForCourse(courseId, assignmentName, prompt, dueDate) {
-		return addAssignment(assignmentName, prompt, dueDate, courseId).then((assignment) => {
+		return addAssignment(assignmentName, prompt, dueDate).then((assignment) => {
 			return addAssignmentToCourse(courseId, assignment.insertedId);
 		});
 	},
