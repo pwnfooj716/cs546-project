@@ -70,7 +70,7 @@ function addStudentsToCourse(studentIds, courseId) {
 	});
 }
 
-function addAssignment(assignmentName, prompt, dueDate) {
+function addAssignment(assignmentName, prompt, dueDate, classID) {
 	if (typeof assignmentName != "string") {
 		return Promise.reject("Assignment name must be provided");
 	}
@@ -80,18 +80,25 @@ function addAssignment(assignmentName, prompt, dueDate) {
 	if (typeof dueDate != "string") {
 		return Promise.reject("Due date must be provided");
 	}
+	return courses().then(collection => {
+		return collection.findOne({_id: classID}).then((course) => {
+			return course.studentIDs;
+		});
+	}).then((ids) => {
+		let submissions = ids.map((x) => {return {studentID: x, grade: 'NA'}});
+        let newAssignment = {
+            _id: uuid(),
+            assignmentName: assignmentName,
+            prompt: prompt,
+            dueDate: dueDate,
+            submissions: submissions
+        };
 
-	let newAssignment = {
-		_id: uuid(),
-		assignmentName: assignmentName,
-		prompt: prompt,
-		dueDate: dueDate,
-		submissions: []
-	};
-	
-	return assignments().then((collection) => {
-		return collection.insertOne(newAssignment);
+        return assignments().then((collection) => {
+            return collection.insertOne(newAssignment);
+        });
 	});
+
 }
 
 function addAssignmentToCourse(courseId, assignmentId) {
@@ -255,7 +262,7 @@ module.exports = {
 	},
 	// User: Teacher
 	createAssignmentForCourse(courseId, assignmentName, prompt, dueDate) {
-		return addAssignment(assignmentName, prompt, dueDate).then((assignment) => {
+		return addAssignment(assignmentName, prompt, dueDate, courseId).then((assignment) => {
 			return addAssignmentToCourse(courseId, assignment.insertedId);
 		});
 	},

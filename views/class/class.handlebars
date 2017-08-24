@@ -21,7 +21,7 @@
             <tr>
                 <td>{{name}}</td>
                 {{#each assignments}}
-                    <td>{{this}}</td>
+                    <td>{{this}} <a href="/class/{{../../class.id}}/{{@index}}/{{../_id}}">*</a></td>
                 {{/each}}
             </tr>
         {{/each}}
@@ -30,3 +30,11 @@
     </div>
     <a href="/class">back</a>
 {{/if}}
+<div id="announcements">
+    {{#each annoucements}}
+        <div>
+            <h1>name</h1>
+            <p>description</p>
+        </div>
+    {{/each}}
+</div>
