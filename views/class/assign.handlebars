@@ -2,6 +2,15 @@
     <h1>{{assignment.name}}</h1>
     <p>{{assignment.description}}</p>
     <span>{{assignment.dueDate}}</span>
+    {{#if isTeacher}}
+        <label>Grade:
+            <input id="grade" type="number" pattern="[0-9|.]{3}" value="{{submission.grade}}">
+        </label>
+        <button id="update">Update</button>
+        <div>Submission date: {{submission.submissionDate}}</div>
+        <script src="/public/js/grade.js"></script>
+    {{else}}
     <button>Submit</button>
+    {{/if}}
     <a href="/class/{{class.id}}">back</a>
 </div>
