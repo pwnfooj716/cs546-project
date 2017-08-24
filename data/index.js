@@ -88,7 +88,7 @@ function addAssignment(assignmentName, prompt, dueDate) {
 		dueDate: dueDate,
 		submissions: []
 	};
-	
+
 	return assignments().then((collection) => {
 		return collection.insertOne(newAssignment);
 	});
