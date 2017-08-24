@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 const db = require('../data');
 
+const multer = require('multer');
+const upload = multer({dest: "file_uploads/"});
+
 router.get("/", (req, res) => {
     //get data to add to class list here
     let user = req.user;
@@ -11,18 +14,17 @@ router.get("/", (req, res) => {
     }
     if (user.isStudent) {
         db.getCoursesForStudent(user._id).then((courses) => {
-
             res.render('class/classList', {classes: courses});
         });
-	} else {
+    } else {
         db.getCoursesForTeacher(user._id).then((courses) => {
-			let data = {
-				classes: courses,
-				isTeacher: true
-			}
+            let data = {
+                classes: courses,
+                isTeacher: true
+            }
             res.render('class/classList', data);
         });
-	}
+    }
 });
 
 router.get("/new", (req,res) => {
@@ -123,7 +125,7 @@ router.post("/", (req,res) => {
         return;
     }
     let name = req.body.name;
-	let students = req.body.ids;
+    let students = req.body.ids;
     db.createCourseForTeacher(user._id, name, students).then(()=> res.redirect("/class"));
 
 });
@@ -162,29 +164,32 @@ router.get("/:classID/:assignmentID", (req,res) => {
     });
 });
 
-router.get("/:classID/:assignmentID/:studentID", (req,res) => {
+router.get("/:classID/:assignmentID/:studentID", (req, res) => {
+    //download a student's submission here
     let user = req.user;
-    if (!user || !user.isTeacher) {
+    if (!user) {
         res.redirect("/login");
         return;
     }
+    
     let classID = req.params.classID;
     let assignmentID = req.params.assignmentID;
-    db.getAssignmentsForCourse(user.courses[classID].courseId).then((assignments)=> {
-        if (assignments.length < assignmentID) {
+    let studentID = req.params.studentID;
+    
+    //authenticate to make sure user has permission to access file
+    if ((user.isStudent) && (user._id !== studentID)) {
+        res.sendStatus(403);
+        return;
+    }
+
+    db.getAssignmentsForCourse(user.courses[classID].courseId).then((assignments) => {
+        if (assignments.length <= assignmentID) {
             res.redirect(`/${classID}`);
             return;
         }
-        let id = req.params.studentID;
-        let assignment = assignments[assignmentID];
-        let submission = assignment.submissions.find((x) => { return (x.studentID === id)});
-        let data = {
-            isTeacher: true,
-            class: {id: classID},
-            assignment: {id: assignmentID, name: assignment.name, description: assignment.prompt, dueDate: assignment.dueDate},
-            submission: submission
-        };
-        res.render('class/assign', data);
+        db.getAssignmentSubmission(assignments[assignmentID]._id, studentID).then((submission) => {
+            res.download("file_uploads/" + submission.filename, submission.originalname);
+        });
     });
 });
 
@@ -198,46 +203,53 @@ router.post("/:classID", (req, res) => {
     let data = req.body;
     let courseID = user.courses[req.params.classID].courseId;
     db.createAssignmentForCourse(courseID, data.name, data.prompt,
-								 data.dueDate).then(() => res.redirect(`/class/${req.params.classID}`));
+                                 data.dueDate).then(() => res.redirect(`/class/${req.params.classID}`));
 });
 
-router.post("/:classID/:assignmentID", (req, res) => {
+router.post("/:classID/:assignmentID", upload.single("submission"), (req, res) => {
    //post a submission here
     let user = req.user;
     if (!user || !user.isStudent) {
         res.redirect("/login");
         return;
     }
-    let data = req.body.submission;
+    
+    let submission = {
+        originalname: req.file.originalname,
+        filename: req.file.filename
+    };
     let classID = req.params.classID;
     let assignmentID = req.params.assignmentID;
-    db.getAssignmentsForCourse(user.courses[classID]).then((assignments)=> {
-        if (assignments.length < assignmentID) {
+    db.getAssignmentsForCourse(user.courses[classID].courseId).then((assignments) => {
+        if (assignments.length <= assignmentID) {
             res.redirect(`/${classID}`);
             return;
         }
-        db.updateAssignmentSubmission(req.body.studentId, assignments[assignmentID]._id, data).then(() => {
+        db.updateAssignmentSubmission(req.user._id, assignments[assignmentID]._id, submission).then(() => {
             res.redirect(`/${classID}/${assignmentID}`);
         });
     });
 });
 
-router.put("/:classID/:assignmentID", (req, res) => {
+router.put("/:classID/:assignmentID", upload.single("submission"), (req, res) => {
     //update a submission here
     let user = req.user;
     if (!user || !user.isStudent) {
         res.redirect("/login");
         return;
     }
-    let data = req.body.submission;
+    let submission = {
+        originalname: req.file.originalname,
+        filename: req.file.filename
+    };
     let classID = req.params.classID;
     let assignmentID = req.params.assignmentID;
-    db.getAssignmentsForCourse(user.courses[classID]).then((assignments)=> {
-        if (assignments.length < assignmentID) {
+    db.getAssignmentsForCourse(user.courses[classID].courseId).then((assignments)=> {
+        if (assignments.length <= assignmentID) {
             res.redirect(`/${classID}`);
             return;
         }
-        db.updateAssignmentSubmission(req.body.studentId, assignments[assignmentID]._id, data).then(() => {
+        db.updateAssignmentSubmission(req.user._id, assignments[assignmentID]._id, submission).then(() => {
             res.redirect(`/${classID}/${assignmentID}`);
         });
     });
