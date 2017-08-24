@@ -1,0 +1,147 @@
+body {
+    background: #FEFEFE;
+    font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+    font-size: 12pt;
+}
+
+main {
+    max-width: 75%;
+    margin: auto;
+}
+
+header {
+    border-bottom: 1px solid #AFAFAF;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #333;
+    margin-bottom: 5px;
+}
+
+h1 {
+    font-size: 17pt;
+    font-weight: bold;
+}
+
+h2 {
+    font-size: 1.75rem;
+}
+
+h3 {
+    font-size: 1.5rem;
+}
+
+h4 {
+    font-size: 1.25rem;
+}
+
+h5 {
+    font-size: 1.15rem;
+}
+
+h6 {
+    font-size: 13 pt;
+    font-weight: lighter;
+}
+
+p {
+    font-size: 1rem;
+    line-height: 2;
+}
+
+
+.is-Palindrome{
+    color: #0000FF;
+}
+
+.not-Palindrome{
+    color: #FF0000;
+}
+
+.customButton {
+    background-color: 
+    #e1e1e1; /* Green */
+    border: none;
+    border-radius: 10px;
+    color: black;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    box-shadow: 0 2px lightgray;
+}
+
+.customButton:Hover{
+    background-color: lightcyan;
+    color: black;
+    box-shadow: 0 2px lightgray;
+}
+
+.customButton:active{
+    background-color: lightblue;
+    box-shadow: 0 2px #666;
+    transform: translateY(4px);
+}
+
+.wrapper {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 10px;
+    grid-auto-rows: minmax(100px, auto);
+  }
+  .one {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .two { 
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .three {
+    grid-column: 3;
+    grid-row: 1;
+  }
+
+  .four {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .five {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .six {
+    grid-column: 3;
+    grid-row: 2;
+  }
+
+  .seven {
+    grid-column: 1;
+    grid-row: 3;
+  }
+
+  .eight {
+    grid-column: 2;
+    grid-row: 3;
+  }
+
+  .nine {
+    grid-column: 3;
+    grid-row: 3;
+  }
+  .ten {
+    grid-column: 1;
+    grid-row: 4;
+  }
+  .eleven {
+    grid-column: 2;
+    grid-row: 4;
+  }
+  .twelve {
+    grid-column: 3;
+    grid-row: 4;
+  }

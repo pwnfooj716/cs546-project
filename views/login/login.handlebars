@@ -1,11 +1,21 @@
-
+<div align="center" class="wrapper">
 <form method="POST" action="/login">
-    <label for="username">Username</label>
-    <input id="username" name="username" type="text" placeholder="Username" class="">
-    <label for="password">Password</label>
-    <input id="password" name="password" type="password" placeholder="Password" class="">
-    <button id="login-button" type="submit">Login</button>
+    <link rel="stylesheet" href="/public/css/main.css">
+    <div>
+    <div class="five">
+        <label for="username">Username</label>
+        <input id="username" name="username" type="text" placeholder="Username" class="">
+    </div>
+    <div class="five">
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" placeholder="Password" class="">
+    </div>
+    <div class="five">
+        <button class="customButton" id="login-button" type="submit">Login</button>
+    </div>
+    
 </form>
+
 {{#if hasErrors}}
     <ul class="error-list">
         {{#each errors}}
@@ -15,8 +25,10 @@
         {{/each}}
     </ul>
 {{/if}}
-<div>
-    <button id="login-teacher-creation">New Teacher</button>
-    <button id="login-student-creation">New Student</button>
+<div class="eight">
+    <button class="customButton" id="login-teacher-creation">New Teacher</button>
+    <button class="customButton" id="login-student-creation">New Student</button>
+</div>
+</div>
 </div>
 <script src="/public/js/login.js"></script>
