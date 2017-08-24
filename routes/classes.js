@@ -164,29 +164,32 @@ router.get("/:classID/:assignmentID", (req,res) => {
     });
 });
 
-router.get("/:classID/:assignmentID/:studentID", (req,res) => {
+router.get("/:classID/:assignmentID/:studentID", (req, res) => {
+    //download a student's submission here
     let user = req.user;
-    if (!user || !user.isTeacher) {
+    let classID = req.params.classID;
+    let assignmentID = req.params.assignmentID;
+    let studentID = req.params.studentID;
+
+    if (!user) {
         res.redirect("/login");
         return;
     }
-    let classID = req.params.classID;
-    let assignmentID = req.params.assignmentID;
-    db.getAssignmentsForCourse(user.courses[classID].courseId).then((assignments)=> {
-        if (assignments.length < assignmentID) {
+    
+    //authenticate to make sure user has permission to access file
+    if ((user.isStudent) && (user._id !== studentID)) {
+        res.sendStatus(403);
+        return;
+    }
+
+    db.getAssignmentsForCourse(user.courses[classID].courseId).then((assignments) => {
+        if (assignments.length <= assignmentID) {
             res.redirect(`/${classID}`);
             return;
         }
-        let id = req.params.studentID;
-        let assignment = assignments[assignmentID];
-        let submission = assignment.submissions.find((x) => { return (x.studentID === id)});
-        let data = {
-            isTeacher: true,
-            class: {id: classID},
-            assignment: {id: assignmentID, name: assignment.name, description: assignment.prompt, dueDate: assignment.dueDate},
-            submission: submission
-        };
-        res.render('class/assign', data);
+        db.getAssignmentSubmission(assignments[assignmentID]._id, studentID).then((submission) => {
+            res.download("file_uploads/" + submission.filename, submission.originalname);
+        });
     });
 });
 
@@ -248,30 +251,6 @@ router.put("/:classID/:assignmentID", upload.single("submission"), (req, res) =>
         }
         db.updateAssignmentSubmission(req.user._id, assignments[assignmentID]._id, submission).then(() => {
             res.redirect(`/${classID}/${assignmentID}`);
-        });
-    });
-});
-
-router.get("/:classID/:assignmentID/:studentID", (req, res) => {
-    //download a student's submission here
-    let user = req.user;
-    let classID = req.params.classID;
-    let assignmentID = req.params.assignmentID;
-    let studentID = req.params.studentID;
-    
-    //authenticate to make sure user has permission to access file
-    if ((user.isStudent) && (user._id !== studentID)) {
-        res.sendStatus(403);
-        return;
-    }
-
-    db.getAssignmentsForCourse(user.courses[classID].courseId).then((assignments) => {
-        if (assignments.length <= assignmentID) {
-            res.redirect(`/${classID}`);
-            return;
-        }
-        db.getAssignmentSubmission(assignments[assignmentID]._id, studentID).then((submission) => {
-            res.download("file_uploads/" + submission.filename, submission.originalname);
         });
     });
 });
