@@ -167,14 +167,14 @@ router.get("/:classID/:assignmentID", (req,res) => {
 router.get("/:classID/:assignmentID/:studentID", (req, res) => {
     //download a student's submission here
     let user = req.user;
-    let classID = req.params.classID;
-    let assignmentID = req.params.assignmentID;
-    let studentID = req.params.studentID;
-
     if (!user) {
         res.redirect("/login");
         return;
     }
+    
+    let classID = req.params.classID;
+    let assignmentID = req.params.assignmentID;
+    let studentID = req.params.studentID;
     
     //authenticate to make sure user has permission to access file
     if ((user.isStudent) && (user._id !== studentID)) {
