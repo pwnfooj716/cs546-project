@@ -33,6 +33,8 @@ passport.deserializeUser(function(id, done) {
     });
 });
 
+///install passport
+
 app.use("/public", express.static(__dirname + "/public"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
