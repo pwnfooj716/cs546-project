@@ -80,25 +80,18 @@ function addAssignment(assignmentName, prompt, dueDate, classID) {
 	if (typeof dueDate != "string") {
 		return Promise.reject("Due date must be provided");
 	}
-	return courses().then(collection => {
-		return collection.findOne({_id: classID}).then((course) => {
-			return course.studentIDs;
-		});
-	}).then((ids) => {
-		let submissions = ids.map((x) => {return {studentID: x, grade: 'NA'}});
-        let newAssignment = {
-            _id: uuid(),
-            assignmentName: assignmentName,
-            prompt: prompt,
-            dueDate: dueDate,
-            submissions: submissions
-        };
 
-        return assignments().then((collection) => {
-            return collection.insertOne(newAssignment);
-        });
+	let newAssignment = {
+		_id: uuid(),
+		assignmentName: assignmentName,
+		prompt: prompt,
+		dueDate: dueDate,
+		submissions: []
+	};
+
+	return assignments().then((collection) => {
+		return collection.insertOne(newAssignment);
 	});
-
 }
 
 function addAssignmentToCourse(courseId, assignmentId) {
