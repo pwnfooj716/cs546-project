@@ -306,6 +306,9 @@ module.exports = {
 			if (coursesIds.length === 0) return [];
 			return courses().then((collection) => {
 				return collection.find({_id: {$in: coursesIds}}, {courseName: 1}).toArray().then((courses) => {
+					let courses = courseIds.map((x) => {
+						return courses.find((y) => y._id === x)[0];
+					});
 					if (courses.length != student.courses.length) throw ("courses missing");
 					let result = [];
 					for (let x = 0; x < courses.length; x++) {
