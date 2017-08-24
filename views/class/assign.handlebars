@@ -2,6 +2,10 @@
     <h1>{{assignment.name}}</h1>
     <p>{{assignment.description}}</p>
     <span>{{assignment.dueDate}}</span>
-    <button>Submit</button>
+    <form method="POST" action="/class/{{class.id}}/{{assignment.id}}" enctype="multipart/form-data">
+        <label for="file-selector">Submit a file</label>
+        <input type="file" name="submission" id="file-selector">
+        <button type="submit">Submit</button>
+    </form>
     <a href="/class/{{class.id}}">back</a>
 </div>

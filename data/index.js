@@ -49,10 +49,10 @@ function addCourse(courseName, teacherId) {
 // User: Teacher
 function addStudentsToCourse(studentIds, courseId) {
 	if (typeof studentIds != "object" && studentIds.length > 0) {
-		return Promise.reject("StudentId must be a string");
+		return Promise.reject("StudentIds must be a non-empty array");
 	}
 	if (typeof courseId != "string") {
-		return Promise.reject("ClassId must be a string");
+		return Promise.reject("CourseId must be a string");
 	}
 
 	return courses().then((collection) => {
@@ -64,7 +64,7 @@ function addStudentsToCourse(studentIds, courseId) {
 			}
 
 			return students().then((collection) => {
-				return collection.update({_id: {$in: studentIds}}, {$addToSet: {courses: courseInfo}});
+				return collection.update({_id: {$in: studentIds}}, {$addToSet: {courses: courseInfo}}, {multi: true});
 			});
 		});
 	});
@@ -289,6 +289,14 @@ module.exports = {
 			return collection.update({_id: assignmentId, submissions: {$elemMatch: {studentId: studentId}}},
 									 {$set: {"submissions.$.submission": submission,
 											 "submissions.$.submissionDate": new Date()}});
+		});
+	},
+	// User: Teacher || Student
+	getAssignmentSubmission(assignmentId, studentId) {
+		return assignments().then((collection) => {
+			return collection.findOne({_id: assignmentId}, {submissions: {$elemMatch: {studentId: studentId}}}).then((assignment) => {
+				return assignment.submissions[0].submission;
+			});
 		});
 	},
 	// User : Student 
