@@ -272,12 +272,6 @@ module.exports = {
 		});
 	},
 	// User: Teacher || Student
-	getAnnouncementsForCourse(courseId) {
-		return getCourse(courseId).then((course) => {
-			return course.accouncements;
-		});
-	},
-	// User: Teacher || Student
 	getAssignmentsForCourse(courseId) {
 		return courses().then((collection) => {
 			return collection.findOne({_id: courseId}).then((course) => {

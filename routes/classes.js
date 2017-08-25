@@ -70,6 +70,7 @@ router.get("/:classID", (req, res) => {
         let assign = [];
         db.getCourse(courseID).then((course) => {
             data.class = {id: req.params.classID, name: course.courseName};
+            data.announcements = course.announcements;
             if (user.isStudent) {
                 for (let x = 0; x < assignments.length; x++) {
                     let sub = assignments[x].submissions;
@@ -238,9 +239,9 @@ router.post("/:classID/announcement", (req, res) => {
     }
     let data = req.body;
     let courseID = user.courses[req.params.classID].courseId;
-    //replace with code to create assignment
-    //db.createAssignmentForCourse(courseID, data.name, data.prompt,
-    //    data.dueDate).then(() => res.redirect(`/class/${req.params.classID}`));
+    db.createAnnouncementForCourse(courseID, data.name, data.prompt).then(() => {
+        res.redirect(`/class/${req.params.classID}`);
+    });
 });
 
 router.post("/:classID/:assignmentID", upload.single("submission"), (req, res) => {
