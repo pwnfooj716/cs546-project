@@ -49,10 +49,10 @@ function addCourse(courseName, teacherId) {
 // User: Teacher
 function addStudentsToCourse(studentIds, courseId) {
 	if (typeof studentIds != "object" && studentIds.length > 0) {
-		return Promise.reject("StudentId must be a string");
+		return Promise.reject("StudentIds must be a non-empty array");
 	}
 	if (typeof courseId != "string") {
-		return Promise.reject("ClassId must be a string");
+		return Promise.reject("CourseId must be a string");
 	}
 
 	return courses().then((collection) => {
@@ -64,7 +64,7 @@ function addStudentsToCourse(studentIds, courseId) {
 			}
 
 			return students().then((collection) => {
-				return collection.update({_id: {$in: studentIds}}, {$addToSet: {courses: courseInfo}});
+				return collection.update({_id: {$in: studentIds}}, {$addToSet: {courses: courseInfo}}, {multi: true});
 			});
 		});
 	});
@@ -291,13 +291,24 @@ module.exports = {
 											 "submissions.$.submissionDate": new Date()}});
 		});
 	},
+	// User: Teacher || Student
+	getAssignmentSubmission(assignmentId, studentId) {
+		return assignments().then((collection) => {
+			return collection.findOne({_id: assignmentId}, {submissions: {$elemMatch: {studentId: studentId}}}).then((assignment) => {
+				return assignment.submissions[0].submission;
+			});
+		});
+	},
 	// User : Student 
 	getCoursesForStudent(studentId) {
 		return getStudent(studentId).then((student) => {
 			let coursesIds = student.courses.map((x) => {return x.courseId});
 			if (coursesIds.length === 0) return [];
 			return courses().then((collection) => {
-				return collection.find({_id: {$in: coursesIds}}, {courseName: 1}).toArray().then((courses) => {
+				return collection.find({_id: {$in: coursesIds}}, {courseName: 1}).toArray().then((courses_unordered) => {
+					let courses = coursesIds.map((x) => {
+						return courses_unordered.find((y) => y._id === x);
+					});
 					if (courses.length != student.courses.length) throw ("courses missing");
 					let result = [];
 					for (let x = 0; x < courses.length; x++) {
@@ -313,7 +324,10 @@ module.exports = {
 		return getTeacher(teacherId).then((teacher) => {
 			let coursesIds = teacher.courses.map((x) => {return x.courseId});
 			return courses().then((collection) => {
-				return collection.find({_id: {$in: coursesIds}}, {courseName: 1}).toArray().then((courses) => {
+				return collection.find({_id: {$in: coursesIds}}, {courseName: 1}).toArray().then((courses_unordered) => {
+					let courses = coursesIds.map((x) => {
+						return courses_unordered.find((y) => y._id === x);
+					});
 					if (courses.length != teacher.courses.length) throw ("courses missing");
 					let result = [];
 					for (let x = 0; x < courses.length; x++) {
