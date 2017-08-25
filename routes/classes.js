@@ -148,6 +148,11 @@ router.get("/:classID/:assignmentID", (req,res) => {
         res.redirect("/login");
         return;
     }
+    let student = (user.isStudent)? user._id: req.query.student;
+    if (!student) {
+        res.sendStatus(403);
+        return;
+    }
     let classID = req.params.classID;
     let assignmentID = req.params.assignmentID;
     db.getAssignmentsForCourse(user.courses[classID].courseId).then((assignments)=> {
@@ -156,10 +161,19 @@ router.get("/:classID/:assignmentID", (req,res) => {
             return;
         }
         let assignment = assignments[assignmentID];
+        let submission = assignment.submissions.find((x) => {return x.studentId === student});
         let data = {
             class: {id: classID},
-            assignment: {id: assignmentID, name: assignment.name, description: assignment.prompt, dueDate: assignment.dueDate}
+            assignment: {id: assignmentID, name: assignment.name, description: assignment.prompt, dueDate: assignment.dueDate},
+            student: student
         };
+        if (user.isTeacher) {
+            data.submission = submission;
+            data.submission.grade = (isNaN(data.submission.grade))? 0: data.submission.grade;
+            data.isTeacher = true;
+        }
+        if (user.isStudent && submission)
+            data.submission = submission.submission.originalname;
         res.render('class/assign', data);
     });
 });
@@ -252,6 +266,58 @@ router.put("/:classID/:assignmentID", upload.single("submission"), (req, res) =>
         db.updateAssignmentSubmission(req.user._id, assignments[assignmentID]._id, submission).then(() => {
             res.redirect(`/${classID}/${assignmentID}`);
         });
+    });
+});
+
+router.put("/:classID/:assignmentID/:studentID/grade", (req, res) => {
+    //update grade here
+    let user = req.user;
+    if (!user || !user.isTeacher) {
+        res.redirect("/login");
+        return;
+    }
+    let classID = req.params.classID;
+    let assignmentID = req.params.assignmentID;
+    let studentID = req.params.studentID;
+    let grade = Number(req.query.grade);
+    if (isNaN(grade)) {
+        res.json({error: "grade not a number"});
+        return;
+    }
+    db.getAssignmentsForCourse(user.courses[classID].courseId).then((assignments)=> {
+        if (assignments.length <= assignmentID) {
+            res.redirect(`/${classID}`);
+            return;
+        }
+        db.updateAssignmentGrade(studentID,assignments[assignmentID]._id,grade).catch((err) => {
+            res.json({error: err});
+        })
+    });
+});
+
+router.put("/:classID/:assignmentID/:studentID/comment", (req, res) => {
+    //update comment here
+    let user = req.user;
+    if (!user || !user.isTeacher) {
+        res.redirect("/login");
+        return;
+    }
+    let classID = req.params.classID;
+    let assignmentID = req.params.assignmentID;
+    let studentID = req.params.studentID;
+    let comment = req.query.comment;
+    if (!comment) {
+        res.json({error: "no comment given"});
+        return;
+    }
+    db.getAssignmentsForCourse(user.courses[classID].courseId).then((assignments)=> {
+        if (assignments.length <= assignmentID) {
+            res.redirect(`/${classID}`);
+            return;
+        }
+        db.updateAssignmentGrade(studentID,assignments[assignmentID]._id,undefined,comment).catch((err) => {
+            res.json({error: err});
+        })
     });
 });
 
