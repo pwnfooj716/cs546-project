@@ -35,6 +35,26 @@ router.get("/new", (req,res) => {
     res.render('class/createClass');
 });
 
+router.get("/student", (req,res) => {
+   //checks if student exists
+    let user = req.user;
+    if (!user) {
+        res.redirect("/login");
+        return;
+    }
+    if (!req.query.student)
+    {
+        res.json({isStudent: false});
+        return;
+    }
+    db.getStudents([req.query.student]).then((result) => {
+        if (result.length > 0)
+            res.json({isStudent: true});
+        else
+            res.json({isStudent: false});
+    });
+});
+
 router.get("/:classID", (req, res) => {
     //get class info based on class ID
     let user = req.user;
@@ -75,7 +95,7 @@ router.get("/:classID", (req, res) => {
                         let sub = assignments[x].submissions;
                         sub.forEach((s) => {
                             for (let y = 0; y < starr.length; y++) {
-                                if (starr[y]._id === s.studentID){
+                                if (starr[y]._id === s.studentId){
                                     starr[y].assignments.push(s.grade);
                                 }
                             }
@@ -142,10 +162,36 @@ router.get("/:classID/:assignmentID", (req,res) => {
     });
 });
 
+router.get("/:classID/:assignmentID/:studentID", (req,res) => {
+    let user = req.user;
+    if (!user || !user.isTeacher) {
+        res.redirect("/login");
+        return;
+    }
+    let classID = req.params.classID;
+    let assignmentID = req.params.assignmentID;
+    db.getAssignmentsForCourse(user.courses[classID].courseId).then((assignments)=> {
+        if (assignments.length < assignmentID) {
+            res.redirect(`/${classID}`);
+            return;
+        }
+        let id = req.params.studentID;
+        let assignment = assignments[assignmentID];
+        let submission = assignment.submissions.find((x) => { return (x.studentID === id)});
+        let data = {
+            isTeacher: true,
+            class: {id: classID},
+            assignment: {id: assignmentID, name: assignment.name, description: assignment.prompt, dueDate: assignment.dueDate},
+            submission: submission
+        };
+        res.render('class/assign', data);
+    });
+});
+
 router.post("/:classID", (req, res) => {
     //create an assignment here
     let user = req.user;
-    if (!user || user.isStudent) {
+    if (!user || !user.isTeacher) {
         res.redirect("/login");
         return;
     }
@@ -158,7 +204,7 @@ router.post("/:classID", (req, res) => {
 router.post("/:classID/:assignmentID", (req, res) => {
    //post a submission here
     let user = req.user;
-    if (!user && !user.isStudent) {
+    if (!user || !user.isStudent) {
         res.redirect("/login");
         return;
     }
@@ -179,7 +225,7 @@ router.post("/:classID/:assignmentID", (req, res) => {
 router.put("/:classID/:assignmentID", (req, res) => {
     //update a submission here
     let user = req.user;
-    if (!user && !user.isStudent) {
+    if (!user || !user.isStudent) {
         res.redirect("/login");
         return;
     }
