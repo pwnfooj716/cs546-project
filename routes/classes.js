@@ -130,7 +130,7 @@ router.post("/", (req,res) => {
 
 });
 
-router.get("/:classID/new", (req, res) => {
+router.get("/:classID/assignment", (req, res) => {
     //assignment creation page
     let user = req.user;
     if (!user || user.isStudent) {
@@ -140,7 +140,16 @@ router.get("/:classID/new", (req, res) => {
     let data = {classId: req.params.classID};
     res.render('class/createAssign', data);
 });
-
+router.get("/:classID/announcement", (req, res) => {
+    //announcement creation page
+    let user = req.user;
+    if (!user || user.isStudent) {
+        res.redirect("/login");
+        return;
+    }
+    let data = {classId: req.params.classID};
+    res.render('class/createAnnounce', data);
+});
 router.get("/:classID/:assignmentID", (req,res) => {
     //display the assignment the user wants to see
     let user = req.user;
@@ -207,7 +216,7 @@ router.get("/:classID/:assignmentID/:studentID", (req, res) => {
     });
 });
 
-router.post("/:classID", (req, res) => {
+router.post("/:classID/assignment", (req, res) => {
     //create an assignment here
     let user = req.user;
     if (!user || !user.isTeacher) {
@@ -218,6 +227,20 @@ router.post("/:classID", (req, res) => {
     let courseID = user.courses[req.params.classID].courseId;
     db.createAssignmentForCourse(courseID, data.name, data.prompt,
                                  data.dueDate).then(() => res.redirect(`/class/${req.params.classID}`));
+});
+
+router.post("/:classID/announcement", (req, res) => {
+    //create an annoucement here
+    let user = req.user;
+    if (!user || !user.isTeacher) {
+        res.redirect("/login");
+        return;
+    }
+    let data = req.body;
+    let courseID = user.courses[req.params.classID].courseId;
+    //replace with code to create assignment
+    //db.createAssignmentForCourse(courseID, data.name, data.prompt,
+    //    data.dueDate).then(() => res.redirect(`/class/${req.params.classID}`));
 });
 
 router.post("/:classID/:assignmentID", upload.single("submission"), (req, res) => {
