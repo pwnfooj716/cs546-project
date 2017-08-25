@@ -6,7 +6,6 @@
                 <li class="assignment"><a href="/class/{{../class.id}}/{{id}}">{{assignmentName}} {{dueDate}} {{grade}}</a></li>
             {{/each}}
         </ul>
-        <a href="/class">back</a>
     </div>
 {{else}}
     <div id="teacher">
@@ -21,12 +20,21 @@
             <tr>
                 <td>{{name}}</td>
                 {{#each assignments}}
-                    <td>{{this}}</td>
+                    <td>{{this}} <a href="/class/{{../../class.id}}/{{@index}}?student={{../_id}}">*</a></td>
                 {{/each}}
             </tr>
         {{/each}}
     </table>
-        <a href="/class/{{class.id}}/new">Create an assignment</a>
+        <a href="/class/{{class.id}}/assignment">Create an assignment</a>
+        <a href="/class/{{class.id}}/announcement">Create an announcement</a>
     </div>
-    <a href="/class">back</a>
 {{/if}}
+<div id="announcements">
+    {{#each announcements}}
+        <div>
+            <h1>{{name}}</h1>
+            <p>{{description}}</p>
+        </div>
+    {{/each}}
+</div>
+<a href="/class">back</a>
