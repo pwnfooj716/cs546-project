@@ -289,7 +289,7 @@ router.put("/:classID/:assignmentID/:studentID/grade", (req, res) => {
             res.redirect(`/${classID}`);
             return;
         }
-        db.updateAssignmentGrade(studentID,assignments[assignmentID]._id,grade).catch((err) => {
+        db.updateAssignmentGrade(studentID, assignments[assignmentID]._id, grade).catch((err) => {
             res.json({error: err});
         });
     });
@@ -315,7 +315,7 @@ router.put("/:classID/:assignmentID/:studentID/comment", (req, res) => {
             res.redirect(`/${classID}`);
             return;
         }
-        db.updateAssignmentGrade(studentID,assignments[assignmentID]._id,undefined,comment).catch((err) => {
+        db.updateAssignmentGrade(studentID, assignments[assignmentID]._id, undefined, comment).catch((err) => {
             res.json({error: err});
         });
     });
