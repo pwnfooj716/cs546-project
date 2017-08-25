@@ -9,9 +9,9 @@
     <label for="username">Username</label>
     <input id="username" name="username" type="text" placeholder="Username" required>
     <label for="password">Password</label>
-    <input id="password" name="password" type="password" placeholder="Password" required>
+    <input id="password" name="password" type="password" placeholder="Password" onchange="check()" required>
     <label for="confirm-password">Confirmed Password</label>
-    <input id="confirm-password" type="password" placeholder="Confirm Password" required>
+    <input id="confirm-password" type="password" placeholder="Confirm Password" onkeyup="check()" required>
     <button type="submit">Create</button>
 </form>
 {{#if hasErrors}}
@@ -24,4 +24,4 @@
     </ul>
 {{/if}}
 <a href="/login">Back To Login</a>
-<script src="/public/js/teacher.js"></script>
+<script src="/public/js/creation.js"></script>
