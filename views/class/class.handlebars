@@ -21,7 +21,7 @@
             <tr>
                 <td>{{name}}</td>
                 {{#each assignments}}
-                    <td>{{this}} <a href="/class/{{../../class.id}}/{{@index}}/{{../_id}}">*</a></td>
+                    <td>{{this}} <a href="/class/{{../../class.id}}/{{@index}}?student={{../_id}}">*</a></td>
                 {{/each}}
             </tr>
         {{/each}}
