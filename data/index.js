@@ -134,15 +134,17 @@ function updateCourseGrade(studentId, courseId, grade) {
 function calculateAndUpdateCourseGrade(studentId, courseId) {
 	return getCourse(courseId).then((course) => {
 		let grade = 0;
+		let graded_assignments = 0;
 		return module.exports.getAssignmentsForCourse(courseId).then((assignments) => {
 			assignments.forEach((assignment) => {
 				assignment.submissions.forEach((submission) => {
-					if (submission.studentId === studentId) {
+					if ((submission.studentId === studentId) && !isNaN(grade)) {
 						grade += submission.grade;
+						graded_assignments++;
 					}
 				});
 			});
-			grade /= assignments.length;
+			grade /= graded_assignments;
 			return updateCourseGrade(studentId, courseId, grade);
 		});
 	});
@@ -288,21 +290,22 @@ module.exports = {
 		});
 	},
 	// User: Teacher
-	updateAssignmentGrade(studentId, assignmentId, grade, teacherResponse) {
-		if (!grade && !teacherResponse)
+	updateAssignmentGrade(studentId, courseId, assignmentId, grade, teacherResponse) {
+		if (!grade && !teacherResponse) {
 			return Promise.reject("Must provide a grade or comment");
+		}
 		return assignments().then((collection) => {
 			if (!grade)
 				return collection.update({_id: assignmentId, submissions: {$elemMatch: {studentId: studentId}}},
-				{$set: {"submissions.$.teacherResponse": teacherResponse}});
+										 {$set: {"submissions.$.teacherResponse": teacherResponse}});
 			if (!teacherResponse)
 				return collection.update({_id: assignmentId, submissions: {$elemMatch: {studentId: studentId}}},
-					{$set: {"submissions.$.grade": grade}});
+										 {$set: {"submissions.$.grade": grade}});
 			return collection.update({_id: assignmentId, submissions: {$elemMatch: {studentId: studentId}}},
 									 {$set: {"submissions.$.grade": grade,
-											 "submissions.$.teacherResponse": teacherResponse}});
-		}).then(() => {
-			calculateAndUpdateCourseGrade(studentId, assignmentId);
+											 "submissions.$.teacherResponse": teacherResponse}}).then(() => {
+												 return calculateAndUpdateCourseGrade(studentId, courseId);
+											 });
 		});
 	},
 	// User: Student
