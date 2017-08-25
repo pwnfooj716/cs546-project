@@ -279,7 +279,7 @@ router.put("/:classID/:assignmentID/:studentID/grade", (req, res) => {
     let classID = req.params.classID;
     let assignmentID = req.params.assignmentID;
     let studentID = req.params.studentID;
-    let grade = Number(req.query.grade);
+    let grade = Number(req.body.grade);
     if (isNaN(grade)) {
         res.json({error: "grade not a number"});
         return;
@@ -305,7 +305,7 @@ router.put("/:classID/:assignmentID/:studentID/comment", (req, res) => {
     let classID = req.params.classID;
     let assignmentID = req.params.assignmentID;
     let studentID = req.params.studentID;
-    let comment = req.query.comment;
+    let comment = req.body.comment;
     if (!comment) {
         res.json({error: "no comment given"});
         return;

@@ -25,19 +25,19 @@
                 $.ajax({
                     type: 'PUT',
                     url: "/class/{{class.id}}/{{assignment.id}}/{{student}}/grade",
-                    data: data,
+                    data: JSON.stringify(data),
                     dataType: "json",
                     contentType: "application/json"
                 });
             }
             function comment() {
-                let data = {comment: teacherR.innerHTML};
+                let data = {comment: teacherR.value};
                 if (data.comment === "")
                     return;
                 $.ajax({
                     type: 'PUT',
                     url: "/class/{{class.id}}/{{assignment.id}}/{{student}}/comment",
-                    data: data,
+                    data: JSON.stringify(data),
                     dataType: "json",
                     contentType: "application/json"
                 });
