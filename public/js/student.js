@@ -8,7 +8,7 @@
             cpass.setCustomValidity("");
         }
     }
-    pass.onchange = check;
-    cpass.onkeyup = check;
+    pass.addEventListener("onclick", check);
+    cpass.addEventListener("onkeyup", check);
 })();
 //implement ajax feature to make sure that id is not already taken
