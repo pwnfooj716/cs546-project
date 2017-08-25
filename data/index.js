@@ -36,7 +36,8 @@ function addCourse(courseName, teacherId) {
 		courseName: courseName,
 		teacherId: teacherId,
 		studentIDs: [],
-		assignments: []
+		assignments: [],
+		announcements: []
 	}
 
 	return courses().then((collection) => {
@@ -257,6 +258,17 @@ module.exports = {
 	createAssignmentForCourse(courseId, assignmentName, prompt, dueDate) {
 		return addAssignment(assignmentName, prompt, dueDate).then((assignment) => {
 			return addAssignmentToCourse(courseId, assignment.insertedId);
+		});
+	},
+	// User: Teacher
+	createAnnouncementForCourse(courseId, name, description) {
+		return courses().then((collection) => {
+			let newAnnouncement = {
+				name: name,
+				description: description,
+				date: new Date()
+			};
+			return collection.update({_id: courseId}, {$addToSet: {announcements: newAnnouncement}});
 		});
 	},
 	// User: Teacher || Student
