@@ -278,14 +278,14 @@ module.exports = {
 	// User: Teacher
 	updateAssignmentGrade(studentId, assignmentId, grade, teacherResponse) {
 		if (!grade && !teacherResponse)
-			return;
+			return Promise.reject("Must provide a grade or comment");
 		return assignments().then((collection) => {
 			if (!grade)
 				return collection.update({_id: assignmentId, submissions: {$elemMatch: {studentId: studentId}}},
-                {$set: {"submissions.$.teacherResponse": teacherResponse}});
-            if (!teacherResponse)
-                return collection.update({_id: assignmentId, submissions: {$elemMatch: {studentId: studentId}}},
-                    {$set: {"submissions.$.grade": grade}});
+				{$set: {"submissions.$.teacherResponse": teacherResponse}});
+			if (!teacherResponse)
+				return collection.update({_id: assignmentId, submissions: {$elemMatch: {studentId: studentId}}},
+					{$set: {"submissions.$.grade": grade}});
 			return collection.update({_id: assignmentId, submissions: {$elemMatch: {studentId: studentId}}},
 									 {$set: {"submissions.$.grade": grade,
 											 "submissions.$.teacherResponse": teacherResponse}});

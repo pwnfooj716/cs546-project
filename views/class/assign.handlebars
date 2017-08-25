@@ -6,13 +6,13 @@
         <label>Grade:
             <input id="grade" type="number" pattern="[0-9|.]{3}" value="{{submission.grade}}">
         </label>
-        <button id="update-grade" onclick="grader({{class.id}},{{assignment.id}},{{student}})">Update</button>
+        <button id="update-grade" onclick="grader({{class.id}}, {{assignment.id}}, {{student}})">Update</button>
         {{#if submission.submission}}
             <div>Current Submission: <a href="/class/{{class.id}}/{{assignment.id}}/{{student}}">{{submission.submission.originalname}}</a></div>
         {{/if}}
         <div>Submission date: {{submission.submissionDate}}</div>
         <textarea id="teacher-comment">{{submission.teacherResponse}}</textarea>
-        <button id="update-teacher-comment" onclick="comment({{class.id}},{{asignment.id}},{{student}})">Update</button>
+        <button id="update-teacher-comment" onclick="comment({{class.id}}, {{assignment.id}}, {{student}})">Update</button>
         <script src="/public/js/grade.js"></script>
     {{else}}
         {{#if submission}}

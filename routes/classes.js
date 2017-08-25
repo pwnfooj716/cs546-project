@@ -157,7 +157,7 @@ router.get("/:classID/:assignmentID", (req,res) => {
         res.redirect("/login");
         return;
     }
-    let student = (user.isStudent)? user._id: req.query.student;
+    let student = (user.isStudent) ? user._id : req.query.student;
     if (!student) {
         res.sendStatus(403);
         return;
@@ -178,7 +178,7 @@ router.get("/:classID/:assignmentID", (req,res) => {
         };
         if (user.isTeacher) {
             data.submission = submission;
-            data.submission.grade = (isNaN(data.submission.grade))? 0: data.submission.grade;
+            data.submission.grade = (isNaN(data.submission.grade)) ? 0 : data.submission.grade;
             data.isTeacher = true;
         }
         if (user.isStudent && submission)
@@ -307,14 +307,14 @@ router.put("/:classID/:assignmentID/:studentID/grade", (req, res) => {
         res.json({error: "grade not a number"});
         return;
     }
-    db.getAssignmentsForCourse(user.courses[classID].courseId).then((assignments)=> {
+    db.getAssignmentsForCourse(user.courses[classID].courseId).then((assignments) => {
         if (assignments.length <= assignmentID) {
             res.redirect(`/${classID}`);
             return;
         }
-        db.updateAssignmentGrade(studentID,assignments[assignmentID]._id,grade).catch((err) => {
+        db.updateAssignmentGrade(studentID, assignments[assignmentID]._id, grade).catch((err) => {
             res.json({error: err});
-        })
+        });
     });
 });
 
@@ -333,14 +333,14 @@ router.put("/:classID/:assignmentID/:studentID/comment", (req, res) => {
         res.json({error: "no comment given"});
         return;
     }
-    db.getAssignmentsForCourse(user.courses[classID].courseId).then((assignments)=> {
+    db.getAssignmentsForCourse(user.courses[classID].courseId).then((assignments) => {
         if (assignments.length <= assignmentID) {
             res.redirect(`/${classID}`);
             return;
         }
-        db.updateAssignmentGrade(studentID,assignments[assignmentID]._id,undefined,comment).catch((err) => {
+        db.updateAssignmentGrade(studentID, assignments[assignmentID]._id, undefined, comment).catch((err) => {
             res.json({error: err});
-        })
+        });
     });
 });
 
