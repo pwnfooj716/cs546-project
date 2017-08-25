@@ -36,7 +36,8 @@ function addCourse(courseName, teacherId) {
 		courseName: courseName,
 		teacherId: teacherId,
 		studentIDs: [],
-		assignments: []
+		assignments: [],
+		announcements: []
 	}
 
 	return courses().then((collection) => {
@@ -49,10 +50,10 @@ function addCourse(courseName, teacherId) {
 // User: Teacher
 function addStudentsToCourse(studentIds, courseId) {
 	if (typeof studentIds != "object" && studentIds.length > 0) {
-		return Promise.reject("StudentId must be a string");
+		return Promise.reject("StudentIds must be a non-empty array");
 	}
 	if (typeof courseId != "string") {
-		return Promise.reject("ClassId must be a string");
+		return Promise.reject("CourseId must be a string");
 	}
 
 	return courses().then((collection) => {
@@ -64,7 +65,7 @@ function addStudentsToCourse(studentIds, courseId) {
 			}
 
 			return students().then((collection) => {
-				return collection.update({_id: {$in: studentIds}}, {$addToSet: {courses: courseInfo}});
+				return collection.update({_id: {$in: studentIds}}, {$addToSet: {courses: courseInfo}}, {multi: true});
 			});
 		});
 	});
@@ -133,15 +134,17 @@ function updateCourseGrade(studentId, courseId, grade) {
 function calculateAndUpdateCourseGrade(studentId, courseId) {
 	return getCourse(courseId).then((course) => {
 		let grade = 0;
+		let graded_assignments = 0;
 		return module.exports.getAssignmentsForCourse(courseId).then((assignments) => {
 			assignments.forEach((assignment) => {
 				assignment.submissions.forEach((submission) => {
-					if (submission.studentId === studentId) {
+					if ((submission.studentId === studentId) && !isNaN(grade)) {
 						grade += submission.grade;
+						graded_assignments++;
 					}
 				});
 			});
-			grade /= assignments.length;
+			grade /= graded_assignments;
 			return updateCourseGrade(studentId, courseId, grade);
 		});
 	});
@@ -259,6 +262,17 @@ module.exports = {
 			return addAssignmentToCourse(courseId, assignment.insertedId);
 		});
 	},
+	// User: Teacher
+	createAnnouncementForCourse(courseId, name, description) {
+		return courses().then((collection) => {
+			let newAnnouncement = {
+				name: name,
+				description: description,
+				date: new Date()
+			};
+			return collection.update({_id: courseId}, {$addToSet: {announcements: newAnnouncement}});
+		});
+	},
 	// User: Teacher || Student
 	getAssignmentsForCourse(courseId) {
 		return courses().then((collection) => {
@@ -276,11 +290,22 @@ module.exports = {
 		});
 	},
 	// User: Teacher
-	updateAssignmentGrade(studentId, assignmentId, grade, teacherResponse) {
+	updateAssignmentGrade(studentId, courseId, assignmentId, grade, teacherResponse) {
+		if (!grade && !teacherResponse) {
+			return Promise.reject("Must provide a grade or comment");
+		}
 		return assignments().then((collection) => {
+			if (!grade)
+				return collection.update({_id: assignmentId, submissions: {$elemMatch: {studentId: studentId}}},
+										 {$set: {"submissions.$.teacherResponse": teacherResponse}});
+			if (!teacherResponse)
+				return collection.update({_id: assignmentId, submissions: {$elemMatch: {studentId: studentId}}},
+										 {$set: {"submissions.$.grade": grade}});
 			return collection.update({_id: assignmentId, submissions: {$elemMatch: {studentId: studentId}}},
 									 {$set: {"submissions.$.grade": grade,
-											 "submissions.$.teacherResponse": teacherResponse}});
+											 "submissions.$.teacherResponse": teacherResponse}}).then(() => {
+												 return calculateAndUpdateCourseGrade(studentId, courseId);
+											 });
 		});
 	},
 	// User: Student
@@ -291,13 +316,24 @@ module.exports = {
 											 "submissions.$.submissionDate": new Date()}});
 		});
 	},
+	// User: Teacher || Student
+	getAssignmentSubmission(assignmentId, studentId) {
+		return assignments().then((collection) => {
+			return collection.findOne({_id: assignmentId}, {submissions: {$elemMatch: {studentId: studentId}}}).then((assignment) => {
+				return assignment.submissions[0].submission;
+			});
+		});
+	},
 	// User : Student 
 	getCoursesForStudent(studentId) {
 		return getStudent(studentId).then((student) => {
 			let coursesIds = student.courses.map((x) => {return x.courseId});
 			if (coursesIds.length === 0) return [];
 			return courses().then((collection) => {
-				return collection.find({_id: {$in: coursesIds}}, {courseName: 1}).toArray().then((courses) => {
+				return collection.find({_id: {$in: coursesIds}}, {courseName: 1}).toArray().then((courses_unordered) => {
+					let courses = coursesIds.map((x) => {
+						return courses_unordered.find((y) => y._id === x);
+					});
 					if (courses.length != student.courses.length) throw ("courses missing");
 					let result = [];
 					for (let x = 0; x < courses.length; x++) {
@@ -313,7 +349,10 @@ module.exports = {
 		return getTeacher(teacherId).then((teacher) => {
 			let coursesIds = teacher.courses.map((x) => {return x.courseId});
 			return courses().then((collection) => {
-				return collection.find({_id: {$in: coursesIds}}, {courseName: 1}).toArray().then((courses) => {
+				return collection.find({_id: {$in: coursesIds}}, {courseName: 1}).toArray().then((courses_unordered) => {
+					let courses = coursesIds.map((x) => {
+						return courses_unordered.find((y) => y._id === x);
+					});
 					if (courses.length != teacher.courses.length) throw ("courses missing");
 					let result = [];
 					for (let x = 0; x < courses.length; x++) {

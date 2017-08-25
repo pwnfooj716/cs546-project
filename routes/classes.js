@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 const db = require('../data');
 
+const multer = require('multer');
+const upload = multer({dest: "file_uploads/"});
+
 router.get("/", (req, res) => {
     //get data to add to class list here
     let user = req.user;
@@ -11,18 +14,17 @@ router.get("/", (req, res) => {
     }
     if (user.isStudent) {
         db.getCoursesForStudent(user._id).then((courses) => {
-
             res.render('class/classList', {classes: courses});
         });
-	} else {
+    } else {
         db.getCoursesForTeacher(user._id).then((courses) => {
-			let data = {
-				classes: courses,
-				isTeacher: true
-			}
+            let data = {
+                classes: courses,
+                isTeacher: true
+            }
             res.render('class/classList', data);
         });
-	}
+    }
 });
 
 router.get("/new", (req,res) => {
@@ -68,6 +70,7 @@ router.get("/:classID", (req, res) => {
         let assign = [];
         db.getCourse(courseID).then((course) => {
             data.class = {id: req.params.classID, name: course.courseName};
+            data.announcements = course.announcements;
             if (user.isStudent) {
                 for (let x = 0; x < assignments.length; x++) {
                     let sub = assignments[x].submissions;
@@ -123,12 +126,12 @@ router.post("/", (req,res) => {
         return;
     }
     let name = req.body.name;
-	let students = req.body.ids;
+    let students = req.body.ids;
     db.createCourseForTeacher(user._id, name, students).then(()=> res.redirect("/class"));
 
 });
 
-router.get("/:classID/new", (req, res) => {
+router.get("/:classID/assignment", (req, res) => {
     //assignment creation page
     let user = req.user;
     if (!user || user.isStudent) {
@@ -138,7 +141,16 @@ router.get("/:classID/new", (req, res) => {
     let data = {classId: req.params.classID};
     res.render('class/createAssign', data);
 });
-
+router.get("/:classID/announcement", (req, res) => {
+    //announcement creation page
+    let user = req.user;
+    if (!user || user.isStudent) {
+        res.redirect("/login");
+        return;
+    }
+    let data = {classId: req.params.classID};
+    res.render('class/createAnnounce', data);
+});
 router.get("/:classID/:assignmentID", (req,res) => {
     //display the assignment the user wants to see
     let user = req.user;
@@ -146,26 +158,9 @@ router.get("/:classID/:assignmentID", (req,res) => {
         res.redirect("/login");
         return;
     }
-    let classID = req.params.classID;
-    let assignmentID = req.params.assignmentID;
-    db.getAssignmentsForCourse(user.courses[classID].courseId).then((assignments)=> {
-        if (assignments.length < assignmentID) {
-            res.redirect(`/${classID}`);
-            return;
-        }
-        let assignment = assignments[assignmentID];
-        let data = {
-            class: {id: classID},
-            assignment: {id: assignmentID, name: assignment.name, description: assignment.prompt, dueDate: assignment.dueDate}
-        };
-        res.render('class/assign', data);
-    });
-});
-
-router.get("/:classID/:assignmentID/:studentID", (req,res) => {
-    let user = req.user;
-    if (!user || !user.isTeacher) {
-        res.redirect("/login");
+    let student = (user.isStudent) ? user._id : req.query.student;
+    if (!student) {
+        res.sendStatus(403);
         return;
     }
     let classID = req.params.classID;
@@ -175,20 +170,54 @@ router.get("/:classID/:assignmentID/:studentID", (req,res) => {
             res.redirect(`/${classID}`);
             return;
         }
-        let id = req.params.studentID;
         let assignment = assignments[assignmentID];
-        let submission = assignment.submissions.find((x) => { return (x.studentID === id)});
+        let submission = assignment.submissions.find((x) => {return x.studentId === student});
         let data = {
-            isTeacher: true,
             class: {id: classID},
             assignment: {id: assignmentID, name: assignment.name, description: assignment.prompt, dueDate: assignment.dueDate},
-            submission: submission
+            student: student
         };
+        if (user.isTeacher) {
+            data.submission = submission;
+            data.submission.grade = (isNaN(data.submission.grade)) ? 0 : data.submission.grade;
+            data.isTeacher = true;
+        }
+        if (user.isStudent && submission)
+            data.submission = submission.submission.originalname;
         res.render('class/assign', data);
     });
 });
 
-router.post("/:classID", (req, res) => {
+router.get("/:classID/:assignmentID/:studentID", (req, res) => {
+    //download a student's submission here
+    let user = req.user;
+    if (!user) {
+        res.redirect("/login");
+        return;
+    }
+    
+    let classID = req.params.classID;
+    let assignmentID = req.params.assignmentID;
+    let studentID = req.params.studentID;
+    
+    //authenticate to make sure user has permission to access file
+    if ((user.isStudent) && (user._id !== studentID)) {
+        res.sendStatus(403);
+        return;
+    }
+
+    db.getAssignmentsForCourse(user.courses[classID].courseId).then((assignments) => {
+        if (assignments.length <= assignmentID) {
+            res.redirect(`/${classID}`);
+            return;
+        }
+        db.getAssignmentSubmission(assignments[assignmentID]._id, studentID).then((submission) => {
+            res.download("file_uploads/" + submission.filename, submission.originalname);
+        });
+    });
+});
+
+router.post("/:classID/assignment", (req, res) => {
     //create an assignment here
     let user = req.user;
     if (!user || !user.isTeacher) {
@@ -198,47 +227,122 @@ router.post("/:classID", (req, res) => {
     let data = req.body;
     let courseID = user.courses[req.params.classID].courseId;
     db.createAssignmentForCourse(courseID, data.name, data.prompt,
-								 data.dueDate).then(() => res.redirect(`/class/${req.params.classID}`));
+                                 data.dueDate).then(() => res.redirect(`/class/${req.params.classID}`));
 });
 
-router.post("/:classID/:assignmentID", (req, res) => {
+router.post("/:classID/announcement", (req, res) => {
+    //create an annoucement here
+    let user = req.user;
+    if (!user || !user.isTeacher) {
+        res.redirect("/login");
+        return;
+    }
+    let data = req.body;
+    let courseID = user.courses[req.params.classID].courseId;
+    db.createAnnouncementForCourse(courseID, data.name, data.prompt).then(() => {
+        res.redirect(`/class/${req.params.classID}`);
+    });
+});
+
+router.post("/:classID/:assignmentID", upload.single("submission"), (req, res) => {
    //post a submission here
     let user = req.user;
     if (!user || !user.isStudent) {
         res.redirect("/login");
         return;
     }
-    let data = req.body.submission;
+    
+    let submission = {
+        originalname: req.file.originalname,
+        filename: req.file.filename
+    };
     let classID = req.params.classID;
     let assignmentID = req.params.assignmentID;
-    db.getAssignmentsForCourse(user.courses[classID]).then((assignments)=> {
-        if (assignments.length < assignmentID) {
+    db.getAssignmentsForCourse(user.courses[classID].courseId).then((assignments) => {
+        if (assignments.length <= assignmentID) {
             res.redirect(`/${classID}`);
             return;
         }
-        db.updateAssignmentSubmission(req.body.studentId, assignments[assignmentID]._id, data).then(() => {
+        db.updateAssignmentSubmission(req.user._id, assignments[assignmentID]._id, submission).then(() => {
             res.redirect(`/${classID}/${assignmentID}`);
         });
     });
 });
 
-router.put("/:classID/:assignmentID", (req, res) => {
+router.put("/:classID/:assignmentID", upload.single("submission"), (req, res) => {
     //update a submission here
     let user = req.user;
     if (!user || !user.isStudent) {
         res.redirect("/login");
         return;
     }
-    let data = req.body.submission;
+    let submission = {
+        originalname: req.file.originalname,
+        filename: req.file.filename
+    };
     let classID = req.params.classID;
     let assignmentID = req.params.assignmentID;
-    db.getAssignmentsForCourse(user.courses[classID]).then((assignments)=> {
-        if (assignments.length < assignmentID) {
+    db.getAssignmentsForCourse(user.courses[classID].courseId).then((assignments)=> {
+        if (assignments.length <= assignmentID) {
             res.redirect(`/${classID}`);
             return;
         }
-        db.updateAssignmentSubmission(req.body.studentId, assignments[assignmentID]._id, data).then(() => {
+        db.updateAssignmentSubmission(req.user._id, assignments[assignmentID]._id, submission).then(() => {
             res.redirect(`/${classID}/${assignmentID}`);
+        });
+    });
+});
+
+router.put("/:classID/:assignmentID/:studentID/grade", (req, res) => {
+    //update grade here
+    let user = req.user;
+    if (!user || !user.isTeacher) {
+        res.redirect("/login");
+        return;
+    }
+    let classID = req.params.classID;
+    let assignmentID = req.params.assignmentID;
+    let studentID = req.params.studentID;
+    let grade = Number(req.body.grade);
+    if (isNaN(grade)) {
+        res.json({error: "grade not a number"});
+        return;
+    }
+    db.getAssignmentsForCourse(user.courses[classID].courseId).then((assignments) => {
+        if (assignments.length <= assignmentID) {
+            res.redirect(`/${classID}`);
+            return;
+        }
+        db.updateAssignmentGrade(studentID, user.courses[classID].courseId,
+                                 assignments[assignmentID]._id, grade).catch((err) => {
+            res.json({error: err});
+        });
+    });
+});
+
+router.put("/:classID/:assignmentID/:studentID/comment", (req, res) => {
+    //update comment here
+    let user = req.user;
+    if (!user || !user.isTeacher) {
+        res.redirect("/login");
+        return;
+    }
+    let classID = req.params.classID;
+    let assignmentID = req.params.assignmentID;
+    let studentID = req.params.studentID;
+    let comment = req.body.comment;
+    if (!comment) {
+        res.json({error: "no comment given"});
+        return;
+    }
+    db.getAssignmentsForCourse(user.courses[classID].courseId).then((assignments) => {
+        if (assignments.length <= assignmentID) {
+            res.redirect(`/${classID}`);
+            return;
+        }
+        db.updateAssignmentGrade(studentID, user.courses[classID].courseId, assignments[assignmentID]._id,
+                                 undefined, comment).catch((err) => {
+            res.json({error: err});
         });
     });
 });

@@ -6,11 +6,23 @@
         <label>Grade:
             <input id="grade" type="number" pattern="[0-9|.]{3}" value="{{submission.grade}}">
         </label>
-        <button id="update">Update</button>
+        <button id="update-grade" onclick="grader({{class.id}}, {{assignment.id}}, {{student}})">Update</button>
+        {{#if submission.submission}}
+            <div>Current Submission: <a href="/class/{{class.id}}/{{assignment.id}}/{{student}}">{{submission.submission.originalname}}</a></div>
+        {{/if}}
         <div>Submission date: {{submission.submissionDate}}</div>
+        <textarea id="teacher-comment">{{submission.teacherResponse}}</textarea>
+        <button id="update-teacher-comment" onclick="comment({{class.id}}, {{assignment.id}}, {{student}})">Update</button>
         <script src="/public/js/grade.js"></script>
     {{else}}
-    <button class="customButton">Submit</button>
+        {{#if submission}}
+        <div>Current Submission: <a href="/class/{{class.id}}/{{assignment.id}}/{{student}}">{{submission}}</a></div>
+        {{/if}}
+    <form method="POST" action="/class/{{class.id}}/{{assignment.id}}" enctype="multipart/form-data">
+        <label for="file-selector">Submit a file</label>
+        <input type="file" name="submission" id="file-selector">
+        <button type="submit" class="customButton">Submit</button>
+    </form>
     {{/if}}
     <a href="/class/{{class.id}}">back</a>
 </div>
