@@ -6,43 +6,14 @@
         <label>Grade:
             <input id="grade" type="number" pattern="[0-9|.]{3}" value="{{submission.grade}}">
         </label>
-        <button id="update-grade" onclick="grader()">Update</button>
+        <button id="update-grade" onclick="grader({{class.id}},{{assignment.id}},{{student}})">Update</button>
         {{#if submission.submission}}
             <div>Current Submission: <a href="/class/{{class.id}}/{{assignment.id}}/{{student}}">{{submission.submission.originalname}}</a></div>
         {{/if}}
         <div>Submission date: {{submission.submissionDate}}</div>
         <textarea id="teacher-comment">{{submission.teacherResponse}}</textarea>
-        <button id="update-teacher-comment" onclick="comment()">Update</button>
-        <script>
-            const grade = $("#grade")[0];
-            //const updateGrade = $("#update-grade");
-            const teacherR = $("#teacher-comment")[0];
-            //const updateComment = $("#update-teacher-comment");
-            function grader (){
-                let data = {grade: grade.value};
-                if (isNaN(Number(data.grade)))
-                    return;
-                $.ajax({
-                    type: 'PUT',
-                    url: "/class/{{class.id}}/{{assignment.id}}/{{student}}/grade",
-                    data: JSON.stringify(data),
-                    dataType: "json",
-                    contentType: "application/json"
-                });
-            }
-            function comment() {
-                let data = {comment: teacherR.value};
-                if (data.comment === "")
-                    return;
-                $.ajax({
-                    type: 'PUT',
-                    url: "/class/{{class.id}}/{{assignment.id}}/{{student}}/comment",
-                    data: JSON.stringify(data),
-                    dataType: "json",
-                    contentType: "application/json"
-                });
-            }
-        </script>
+        <button id="update-teacher-comment" onclick="comment({{class.id}},{{asignment.id}},{{student}})">Update</button>
+        <script src="/public/js/grade.js"></script>
     {{else}}
         {{#if submission}}
         <div>Current Submission: <a href="/class/{{class.id}}/{{assignment.id}}/{{student}}">{{submission}}</a></div>

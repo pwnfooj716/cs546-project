@@ -1,36 +1,28 @@
-// (function() {
-//     const grade = $("#grade");
-//     const updateGrade = $("#update-grade");
-//     const teacherR = $("#teacher-comment");
-//     const updateComment = $("#update-teacher-comment");
-//     updateGrade.addEventListener("click", () => {
-//         let data = {grade: grade.value};
-//         if (Number(data.grade) === NAN)
-//             return;
-//         $.ajax({
-//             type: "PUT",
-//             url: "/class/{{class.id}}/{{assignment.id}}/{{student}}/grade",
-//             data: data,
-//             success: function (data) {
-//
-//             },
-//             dataType: "json",
-//             contentType: "application/json"
-//         });
-//     });
-//     updateComment.addEventListener("click", () => {
-//         let data = {comment: teacherR.innerHTML};
-//         if (data.comment === "")
-//             return;
-//         $.ajax({
-//             type: "PUT",
-//             url: "/class/{{class.id}}/{{assignment.id}}/{{student}}/comment",
-//             data: data,
-//             success: function(data) {
-//
-//             },
-//             dataType: "json",
-//             contentType: "application/json"
-//         });
-//     });
-// })();
+const grade = $("#grade")[0];
+//const updateGrade = $("#update-grade");
+const teacherR = $("#teacher-comment")[0];
+//const updateComment = $("#update-teacher-comment");
+function grader (classId, assignmentId, studentId){
+    let data = {grade: grade.value};
+    if (isNaN(Number(data.grade)))
+        return;
+    $.ajax({
+        type: 'PUT',
+        url: `/class/${classId}/${assignmentId}/${studentId}/grade`,
+        data: JSON.stringify(data),
+        dataType: "json",
+        contentType: "application/json"
+    });
+}
+function comment(classId, assignmentId, studentId) {
+    let data = {comment: teacherR.value};
+    if (data.comment === "")
+        return;
+    $.ajax({
+        type: 'PUT',
+        url: `/class/${classId}/${assignmentId}/${studentId}/comment`,
+        data: JSON.stringify(data),
+        dataType: "json",
+        contentType: "application/json"
+    });
+}
