@@ -138,7 +138,7 @@ function calculateAndUpdateCourseGrade(studentId, courseId) {
 		return module.exports.getAssignmentsForCourse(courseId).then((assignments) => {
 			assignments.forEach((assignment) => {
 				assignment.submissions.forEach((submission) => {
-					if ((submission.studentId === studentId) && (grade !== NaN)) {
+					if ((submission.studentId === studentId) && !isNaN(grade)) {
 						grade += submission.grade;
 						graded_assignments++;
 					}
