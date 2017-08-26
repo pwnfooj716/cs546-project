@@ -16,13 +16,19 @@
         <script src="/public/js/grade.js"></script>
     {{else}}
         {{#if submission}}
-        <div>Current Submission: <a href="/class/{{class.id}}/{{assignment.id}}/{{student}}">{{submission}}</a></div>
+            <div>Current Submission: <a href="/class/{{class.id}}/{{assignment.id}}/{{student}}">{{submission}}</a></div>
+            <form method="PUT" action="/class/{{class.id}}/{{assignment.id}}" enctype="multipart/form-data">
+                <label for="file-selector">Submit a file</label>
+                <input type="file" name="submission" id="file-selector">
+                <button type="submit">Submit</button>
+            </form>
+        {{else}}
+            <form method="POST" action="/class/{{class.id}}/{{assignment.id}}" enctype="multipart/form-data">
+                <label for="file-selector">Submit a file</label>
+                <input type="file" name="submission" id="file-selector">
+                <button type="submit">Submit</button>
+            </form>
         {{/if}}
-    <form method="POST" action="/class/{{class.id}}/{{assignment.id}}" enctype="multipart/form-data">
-        <label for="file-selector">Submit a file</label>
-        <input type="file" name="submission" id="file-selector">
-        <button type="submit">Submit</button>
-    </form>
     {{/if}}
     <a href="/class/{{class.id}}">back</a>
 </div>
