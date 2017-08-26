@@ -53,30 +53,50 @@
         <script src="/public/js/grade.js"></script>
     {{else}}
         <table>
+        {{#if submission}}
             <tr>
                 <td>
-                    {{#if submission}}
+
                     <div>Current Submission: <a href="/class/{{class.id}}/{{assignment.id}}/{{student}}">{{submission}}</a></div>
-                     {{/if}}
+
                 </td>
             </tr>
-    <form method="POST" action="/class/{{class.id}}/{{assignment.id}}" enctype="multipart/form-data">
-        <tr>
-            <td>
-                <label for="file-selector">Select a file to Submit: </label>
-            </td>
-        </tr>
-       <tr>
-            <td>
-                 <input type="file" name="submission" id="file-selector">
-            </td>
-        </tr>
-       <tr>
-           <td>
-               <button type="submit" class="customButton">Submit</button>
-            </td>
-        </tr>        
-    </form>
+            <form method="PUT" action="/class/{{class.id}}/{{assignment.id}}" enctype="multipart/form-data">
+                <tr>
+                    <td>
+                        <label for="file-selector">Select a file to Submit: </label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="file" name="submission" id="file-selector">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <button type="submit" class="customButton">Submit</button>
+                    </td>
+                </tr>
+            </form>
+        {{else}}
+            <form method="POST" action="/class/{{class.id}}/{{assignment.id}}" enctype="multipart/form-data">
+                <tr>
+                    <td>
+                        <label for="file-selector">Select a file to Submit: </label>
+                    </td>
+                </tr>
+               <tr>
+                    <td>
+                         <input type="file" name="submission" id="file-selector">
+                    </td>
+                </tr>
+               <tr>
+                   <td>
+                       <button type="submit" class="customButton">Submit</button>
+                    </td>
+                </tr>
+            </form>
+        {{/if}}
     {{/if}}
     <tr>
             <td >
