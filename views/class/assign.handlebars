@@ -1,7 +1,6 @@
 <div>
     <h1>{{assignment.name}}</h1>
-    <p>{{assignment.description}}</p>
-    
+    <p>Prompt: {{assignment.description}}</p>
     {{#if isTeacher}}
         <table>
             <tr>
@@ -10,25 +9,25 @@
                 </td>
                 <td colspan="2">
                     <span>{{assignment.dueDate}}</span>
-                </td>            
+                </td>
             </tr>
             <tr>
                 <td>
-                     <label>Grade:</label>
+                    <label>Grade:</label>
                 </td>
                 <td>
                     <input id="grade" type="number" pattern="[0-9|.]{3}" value="{{submission.grade}}">
-                </td> 
+                </td>
                 <td>
                     <button class="customButton" id="update-grade" onclick="grader({{class.id}}, {{assignment.id}}, {{student}})">Update</button>
-                </td>           
+                </td>
             </tr>
             <tr>
                 <td colspan="3">
                     {{#if submission.submission}}
-                     <div>Current Submission: <a href="/class/{{class.id}}/{{assignment.id}}/{{student}}">{{submission.submission.originalname}}</a></div>
+                        <div>Current Submission: <a href="/class/{{class.id}}/{{assignment.id}}/{{student}}">{{submission.submission.originalname}}</a></div>
                     {{/if}}
-                </td>                     
+                </td>
             </tr>
             <tr>
                 <td>
@@ -36,7 +35,7 @@
                 </td>
                 <td>
                     <span>{{submission.submissionDate}}</span>
-                </td>            
+                </td>
             </tr>
             <tr>
                 <td>
@@ -44,15 +43,15 @@
                 </td>
                 <td>
                     <textarea id="teacher-comment">{{submission.teacherResponse}}</textarea>
-                </td> 
+                </td>
                 <td>
                     <button class="customButton" id="update-teacher-comment" onclick="comment({{class.id}}, {{assignment.id}}, {{student}})">Update</button>
-                </td>            
-            </tr>        
+                </td>
+            </tr>
         </table>
         <script src="/public/js/grade.js"></script>
     {{else}}
-        <table>
+    <table>
         {{#if submission}}
             <tr>
                 <td>
@@ -85,24 +84,24 @@
                         <label for="file-selector">Select a file to Submit: </label>
                     </td>
                 </tr>
-               <tr>
+                <tr>
                     <td>
-                         <input type="file" name="submission" id="file-selector">
+                        <input type="file" name="submission" id="file-selector">
                     </td>
                 </tr>
-               <tr>
-                   <td>
-                       <button type="submit" class="customButton">Submit</button>
+                <tr>
+                    <td>
+                        <button type="submit" class="customButton">Submit</button>
                     </td>
                 </tr>
             </form>
         {{/if}}
     {{/if}}
     <tr>
-            <td >
-                <a href="/class/{{class.id}}" class="customButton">Back</a>            
-                 <a href="/logout"  class="customButton">Logout</a>
-            </td>
-    </tr>    
-    </table>
+        <td >
+            <a href="/class/{{class.id}}" class="customButton">Back</a>
+            <a href="/logout"  class="customButton">Logout</a>
+        </td>
+    </tr>
+</table>
 </div>

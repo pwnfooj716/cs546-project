@@ -1,58 +1,58 @@
 {{#if isStudent}}
-<div id="student">     
-    <table>
-        <tr>
-            <td colspan="3">
-                <h1>{{class.name}}</h1>
-            </td>
-        </tr>
-        <tr>
-            <th>Assignment Name</th>
-            <th>Due Date</th>
-            <th>Grade</th>
-        </tr>
-        
-        <ul id="assignment-list">
-            {{#each assignments}}
+    <div id="student">
+        <table>
             <tr>
-                <td>
-                    <a href="/class/{{../class.id}}/{{id}}">{{assignmentName}} </a>
-                </td>
-                <td>
-                     <label>{{dueDate}}</label> 
-                </td>
-                <td>
-                    <label>{{grade}}</label>
+                <td colspan="3">
+                    <h1>{{class.name}}</h1>
                 </td>
             </tr>
-            {{/each}}
-        </ul>
+            <tr>
+                <th>Assignment Name</th>
+                <th>Due Date</th>
+                <th>Grade</th>
+            </tr>
+
+            <ul id="assignment-list">
+                {{#each assignments}}
+                    <tr>
+                        <td>
+                            <a href="/class/{{../class.id}}/{{id}}">{{assignmentName}} </a>
+                        </td>
+                        <td>
+                            <label>{{dueDate}}</label>
+                        </td>
+                        <td>
+                            <label>{{grade}}</label>
+                        </td>
+                    </tr>
+                {{/each}}
+            </ul>
+        </table>
     </div>
-</table>
 {{else}}
-    <div id="teacher">
     <table>
-        <tr>
-            <td colspan="2">
-                <h1>{{class.name}}</h1>
-            </td>
-        </tr>
-        <tr>
-            <th>Student Name</th>
-            {{#each assignments}}
-                <th>{{name}}</th>
-            {{/each}}
-        </tr>
-        {{#each students}}
-            <tr>       
-                <td>{{name}}</td>        
-                {{#each assignments}}                    
-                    <td> 
-                        <a href="/class/{{../../class.id}}/{{@index}}?student={{../_id}}">{{this}}</a>
-                    </td>
+        <div id="teacher">
+            <tr>
+                <td colspan="2">
+                    <h1>{{class.name}}</h1>
+                </td>
+            </tr>
+            <tr>
+                <th>Student Name</th>
+                {{#each assignments}}
+                    <th>{{name}}</th>
                 {{/each}}
             </tr>
-        {{/each}}
+            {{#each students}}
+                <tr>
+                    <td>{{name}}</td>
+                    {{#each assignments}}
+                        <td>
+                            <a href="/class/{{../../class.id}}/{{@index}}?student={{../_id}}">{{this}}</a>
+                        </td>
+                    {{/each}}
+                </tr>
+            {{/each}}
             <tr>
                 <td colspan="2">
                     <a href="/class/{{class.id}}/assignment" class="customButton">Create an assignment</a>
@@ -60,24 +60,24 @@
             </tr>
             <tr>
                 <td colspan="2">
-                     <a href="/class/{{class.id}}/announcement" class="customButton">Create an announcement</a>
+                    <a href="/class/{{class.id}}/announcement" class="customButton">Create an announcement</a>
                 </td>
-            </tr>    
-    </div>
+            </tr>
+        </div>
 {{/if}}
     <tr>
-      <td colspan="2">
-        <h5>Announcements for {{class.name}}</h5>
-      </td>
+        <td colspan="2">
+            <h5>Announcements for {{class.name}}</h5>
+        </td>
     </tr>
     <tr>
-     <td colspan="2">
-        <div id="announcements">
-        {{#each announcements}}
-                <h5>{{name}}</h5>
-                <p>{{description}}</p>
-        {{/each}}
-        </div>
+        <td colspan="2">
+            <div id="announcements">
+                {{#each announcements}}
+                    <h5>{{name}}</h5>
+                    <p>{{description}}</p>
+                {{/each}}
+            </div>
         </td>
     </tr>
     <tr>
@@ -85,7 +85,7 @@
             <a href="/class" class="customButton">Back</a>
         </td>
         <td align ="left">
-          <a href="/logout" class="customButton">Logout</a>
+            <a href="/logout" class="customButton">Logout</a>
         </td>
     </tr>
 </table>

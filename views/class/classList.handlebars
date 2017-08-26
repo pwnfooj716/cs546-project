@@ -4,13 +4,13 @@
         {{else}}
             No classes
         {{/if}}
-    {{#each classes}}
-        <li class="class"><a href="/class/{{index}}">{{name}} {{semester}}</a></li>
-    {{/each}}
+        {{#each classes}}
+            <li class="class"><a href="/class/{{index}}">{{name}} {{semester}}</a></li>
+        {{/each}}
     </ul>
     {{#if isTeacher}}
         <a href="/class/new" class="customButton">Create a Class</a>
     {{/if}}
-    
-        <a href="/logout" class="customButton">Logout</a>
+
+    <a href="/logout" class="customButton">Logout</a>
 </div>

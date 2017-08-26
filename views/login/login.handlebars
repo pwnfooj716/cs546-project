@@ -1,29 +1,28 @@
 <div align="center" class="wrapper">
-<form method="POST" action="/login">
-    <link rel="stylesheet" href="/public/css/main.css">
     <table class="centralBody" border="0">
-    <tr>
-        <td>
-            <label for="username">Username</label>
-        </td>
-        <td>
-            <input id="username" name="username" type="text" placeholder="Username" class="">
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <label for="password">Password</label>
-        </td>
-        <td>
-            <input id="password" name="password" type="password" placeholder="Password" class="">
-        </td>
-    </tr>
-    <tr>
-        <td colspan="2">
-        <button class="customButton" id="login-button" type="submit">Login</button>
-        </td>
-    </tr>
-</form>
+    <form method="POST" action="/login">
+        <tr>
+            <td>
+                <label for="username">Username</label>
+            </td>
+            <td>
+                <input id="username" name="username" type="text" placeholder="Username" class="">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="password">Password</label>
+            </td>
+            <td>
+                <input id="password" name="password" type="password" placeholder="Password" class="">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+            <button class="customButton" id="login-button" type="submit">Login</button>
+            </td>
+        </tr>
+    </form>
 
 {{#if hasErrors}}
     <ul class="error-list">
