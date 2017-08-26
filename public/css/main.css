@@ -64,13 +64,12 @@ p {
     border: none;
     border-radius: 10px;
     color: black;
-    padding: 15px 32px;
+    padding: 5px 10px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
     font-size: 16px;
-    box-shadow: 0 2px lightgray;
-    
+    box-shadow: 0 2px lightgray;    
 }
 
 .customButton:Hover{
@@ -86,70 +85,20 @@ p {
 }
 
 .wrapper {
-    display: block;
-
-    grid-template-columns: repeat(3, 1fr);
-    grid-gap: 10px;
-    grid-auto-rows: minmax(100px, auto);
+    display: flex;
+    justify-content: center;
+    align-items: center;
     align-content: center;
     text-align: center;
   }
-  .one {
-    grid-column: 1;
-    grid-row: 1;
-  }
-  .two { 
-    grid-column: 2;
-    grid-row: 1;
-  }
-
-  .three {
-    grid-column: 3;
-    grid-row: 1;
-  }
-
-  .four {
-    grid-column: 1;
-    grid-row: 2;
-  }
-
-  .five {
-    grid-column: 2;
-    grid-row: 2;
-  }
-
-  .six {
-    grid-column: 3;
-    grid-row: 2;
-  }
-
-  .seven {
-    grid-column: 1;
-    grid-row: 3;
-  }
-
-  .eight {
-    grid-column: 2;
-    grid-row: 3;
-  }
-
-  .nine {
-    grid-column: 3;
-    grid-row: 3;
-  }
-  .ten {
-    grid-column: 1;
-    grid-row: 4;
-  }
-  .eleven {
-    grid-column: 2;
-    grid-row: 4;
-  }
-  .twelve {
-    grid-column: 3;
-    grid-row: 4;
-  }
   
-table, th, td {
-    border: 1px solid black;
-}
+  .centralBody{
+    margin: 0;
+    position: absolute;
+    top: 20%;
+    left: 40%;
+    transform: translate(-5%, -5%);
+  }
+  .error-list{
+      font:red;
+  }

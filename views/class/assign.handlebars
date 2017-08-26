@@ -1,28 +1,88 @@
 <div>
     <h1>{{assignment.name}}</h1>
     <p>{{assignment.description}}</p>
-    <span>{{assignment.dueDate}}</span>
+    
     {{#if isTeacher}}
-        <label>Grade:
-            <input id="grade" type="number" pattern="[0-9|.]{3}" value="{{submission.grade}}">
-        </label>
-        <button id="update-grade" onclick="grader({{class.id}}, {{assignment.id}}, {{student}})">Update</button>
-        {{#if submission.submission}}
-            <div>Current Submission: <a href="/class/{{class.id}}/{{assignment.id}}/{{student}}">{{submission.submission.originalname}}</a></div>
-        {{/if}}
-        <div>Submission date: {{submission.submissionDate}}</div>
-        <textarea id="teacher-comment">{{submission.teacherResponse}}</textarea>
-        <button id="update-teacher-comment" onclick="comment({{class.id}}, {{assignment.id}}, {{student}})">Update</button>
+        <table>
+            <tr>
+                <td>
+                    <label>Due Date:</label>
+                </td>
+                <td colspan="2">
+                    <span>{{assignment.dueDate}}</span>
+                </td>            
+            </tr>
+            <tr>
+                <td>
+                     <label>Grade:</label>
+                </td>
+                <td>
+                    <input id="grade" type="number" pattern="[0-9|.]{3}" value="{{submission.grade}}">
+                </td> 
+                <td>
+                    <button class="customButton" id="update-grade" onclick="grader({{class.id}}, {{assignment.id}}, {{student}})">Update</button>
+                </td>           
+            </tr>
+            <tr>
+                <td colspan="3">
+                    {{#if submission.submission}}
+                     <div>Current Submission: <a href="/class/{{class.id}}/{{assignment.id}}/{{student}}">{{submission.submission.originalname}}</a></div>
+                    {{/if}}
+                </td>                     
+            </tr>
+            <tr>
+                <td>
+                    <label>Submission date:</label>
+                </td>
+                <td>
+                    <span>{{submission.submissionDate}}</span>
+                </td>            
+            </tr>
+            <tr>
+                <td>
+                    <label>Comment:</label>
+                </td>
+                <td>
+                    <textarea id="teacher-comment">{{submission.teacherResponse}}</textarea>
+                </td> 
+                <td>
+                    <button class="customButton" id="update-teacher-comment" onclick="comment({{class.id}}, {{assignment.id}}, {{student}})">Update</button>
+                </td>            
+            </tr>        
+        </table>
         <script src="/public/js/grade.js"></script>
     {{else}}
-        {{#if submission}}
-        <div>Current Submission: <a href="/class/{{class.id}}/{{assignment.id}}/{{student}}">{{submission}}</a></div>
-        {{/if}}
+        <table>
+            <tr>
+                <td>
+                    {{#if submission}}
+                    <div>Current Submission: <a href="/class/{{class.id}}/{{assignment.id}}/{{student}}">{{submission}}</a></div>
+                     {{/if}}
+                </td>
+            </tr>
     <form method="POST" action="/class/{{class.id}}/{{assignment.id}}" enctype="multipart/form-data">
-        <label for="file-selector">Submit a file</label>
-        <input type="file" name="submission" id="file-selector">
-        <button type="submit" class="customButton">Submit</button>
+        <tr>
+            <td>
+                <label for="file-selector">Select a file to Submit: </label>
+            </td>
+        </tr>
+       <tr>
+            <td>
+                 <input type="file" name="submission" id="file-selector">
+            </td>
+        </tr>
+       <tr>
+           <td>
+               <button type="submit" class="customButton">Submit</button>
+            </td>
+        </tr>        
     </form>
     {{/if}}
-    <a href="/class/{{class.id}}">back</a>
+    <tr>
+            <td >
+                <a href="/class/{{class.id}}" class="customButton">Back</a>            
+                 <a href="/logout"  class="customButton">Logout</a>
+            </td>
+    </tr>    
+    </table>
 </div>

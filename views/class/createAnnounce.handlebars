@@ -1,9 +1,38 @@
 <form method="POST" action="/class/{{classId}}/announcement">
-    <h1>Announcement Creation</h1>
-    <label for="name">Announcement Name</label>
-    <input id="name" name="name" type="text" placeholder="announcement name">
-    <label for="prompt">Description</label>
-    <textarea id="prompt" name="prompt" placeholder="insert description here"></textarea>
-    <button type="submit">Create</button>
+<table>
+    <tr>
+        <td colspan="2">
+            <h1>Announcement Creation</h1>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label for="name">Announcement Name</label>
+        </td>
+        <td>
+            <input id="name" name="name" type="text" placeholder="announcement name">
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label for="prompt">Description</label>
+        </td>
+        <td>
+            <textarea id="prompt" name="prompt" placeholder="insert description here"></textarea>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <button type="submit" class="customButton">Create</button>
+        </td>
+    </tr>    
 </form>
-<a href="/class/{{classId}}">Back To Class</a>
+    <tr>
+        <td>
+            <a href="/class/{{classId}}" class="customButton">Back To Class</a>
+        </td>
+        <td>
+            <a href="/logout" class="customButton">Logout</a>
+        </td>
+    </tr>
+</table>

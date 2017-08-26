@@ -1,32 +1,65 @@
 <form method="POST" action="/new/teacher">
     <h1>Teacher Creation</h1>
-    <div>
-        <div>
-            <label for="teacherID">Teacher ID</label>
-            <input id="teacherID" name="_id" type="number" pattern="[0-9]{8}" placeholder="10000000" required>
-        </div>
-        <div>
-          <label for="first-name">First Name</label>
-            <input id="first-name" name="firstName" type="text" placeholder="First Name" required>
-        </div>
-        <div>
-          <label for="last-name">Last Name</label>
-            <input id="last-name" name="lastName" type="text" placeholder="Last Name" required>
-        </div>
-        <div>
-            <label for="username">Username</label>
-            <input id="username" name="username" type="text" placeholder="Username" required>
-        </div>
-        <div>
-            <label for="password">Password</label>
-            <input id="password" name="password" type="password" placeholder="Password" required>
-        </div>
-    <div>
-    <label for="confirm-password">Confirmed Password</label>
-    <input id="confirm-password" type="password" placeholder="Confirm Password" required>
-    </div>
-    <button class="customButton" type="submit">Create</button>
-    </div>
+    <table border="0">
+        <tr>
+            <td>
+                <label for="teacherID">Teacher ID</label>
+            </td>
+            <td>
+                <input id="teacherID" name="_id" type="number" pattern="[0-9]{8}" placeholder="10000000" required>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <label for="first-name">First Name</label>
+            </td>
+            <td>
+                 <input id="first-name" name="firstName" type="text" placeholder="First Name" required>
+            </td>
+        </tr> 
+      
+        <tr>
+            <td>
+               <label for="last-name">Last Name</label>
+            </td>
+            <td>
+               <input id="last-name" name="lastName" type="text" placeholder="Last Name" required>
+            </td>
+        </tr>
+    
+        <tr>
+            <td>
+                <label for="username">Username</label>
+            </td>
+            <td>
+                <input id="username" name="username" type="text" placeholder="Username" required>
+            </td>
+        </tr>
+    
+        <tr>
+            <td>
+                <label for="password">Password</label>
+            </td>
+            <td>
+                <input id="password" name="password" type="password" placeholder="Password" required>
+            </td>
+        </tr>
+       
+        <tr>
+            <td>
+                <label for="confirm-password">Confirmed Password</label>
+            </td>
+            <td>
+                <input id="confirm-password" type="password" placeholder="Confirm Password" required>
+            </td>
+        </tr>   
+    
+        <tr>
+            <td colspan="2">
+                <button class="customButton" type="submit">Create</button>
+            </td>
+        </tr> 
 </form>
 {{#if hasErrors}}
     <ul class="error-list">
@@ -37,5 +70,10 @@
         {{/each}}
     </ul>
 {{/if}}
-<a href="/login">Back To Login</a>
+    <tr>
+        <td colspan="2">
+           <a href="/login">Back To Login</a>
+         </td>
+    </tr>
+</table>
 <script src="/public/js/teacher.js"></script>
