@@ -181,7 +181,7 @@ router.get("/:classID/:assignmentID", (req,res) => {
             data.submission.grade = (isNaN(data.submission.grade)) ? 0 : data.submission.grade;
             data.isTeacher = true;
         }
-        if (user.isStudent && submission)
+        if (user.isStudent && submission.submission)
             data.submission = submission.submission.originalname;
         res.render('class/assign', data);
     });
