@@ -41,7 +41,7 @@ h5 {
 }
 
 h6 {
-    font-size: 13 pt;
+//font-size: 13 px;
     font-weight: lighter;
 }
 
@@ -69,7 +69,7 @@ p {
     text-decoration: none;
     display: inline-block;
     font-size: 16px;
-    box-shadow: 0 2px lightgray;    
+    box-shadow: 0 2px lightgray;
 }
 
 .customButton:Hover{
@@ -90,15 +90,53 @@ p {
     align-items: center;
     align-content: center;
     text-align: center;
-  }
-  
-  .centralBody{
-    margin: 0;
-    position: absolute;
-    top: 20%;
-    left: 40%;
-    transform: translate(-5%, -5%);
-  }
-  .error-list{
-      font:red;
-  }
+
+}
+
+.loginWrapper {
+    display: block;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    text-align: center;
+    margin-top: 17%;
+}
+.loginWrapper > table {
+    margin-left: 2%;
+}
+
+.centralBody {
+
+}
+.creation {
+    margin-left: 38%;
+}
+.error {
+    text-align: center;
+}
+.error, .error-list{
+    color:red;
+}
+.class:nth-child(odd) {
+    background-color: gray;
+    color: white
+}
+.class:nth-child(even) {
+    background-color: lightgray;
+    color:black;
+}
+.class {
+    list-style-type: none;
+    border-radius:10px;
+}
+.class > a {
+    text-decoration: none;
+    font-size: 40px;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.class > a:visited {
+    color: inherit;
+}
+.buttons {
+    margin-top: 10px;
+}

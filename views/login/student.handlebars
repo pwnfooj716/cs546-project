@@ -1,5 +1,5 @@
 <form method="POST" action="/new/student">
-    <table border="0">
+    <table class="creation" border="0">
         <h1>Student Creation</h1>
         <tr>
             <td>
@@ -54,6 +54,11 @@
                 <button class="customButton" type="submit">Create</button>
             </td>
         </tr>
+        <tr>
+            <td colspan="2">
+                <a href="/login">Back To Login</a>
+            </td>
+        </tr>
     </table>
 </form>
 <table>
@@ -66,11 +71,5 @@
             {{/each}}
         </ul>
     {{/if}}
-    <tr>
-        <td colspan="2">
-            <a href="/login">Back To Login</a>
-        </td>
-    </tr>
-
 </table>
 <script src="/public/js/creation.js"></script>
