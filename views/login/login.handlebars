@@ -1,46 +1,47 @@
 <div align="center" class="wrapper">
-    <table class="centralBody" border="0">
     <form method="POST" action="/login">
-        <tr>
-            <td>
-                <label for="username">Username</label>
-            </td>
-            <td>
-                <input id="username" name="username" type="text" placeholder="Username" class="">
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <label for="password">Password</label>
-            </td>
-            <td>
-                <input id="password" name="password" type="password" placeholder="Password" class="">
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-            <button class="customButton" id="login-button" type="submit">Login</button>
-            </td>
-        </tr>
+        <table class="centralBody" border="0">
+            <tr>
+                <td>
+                    <label for="username">Username</label>
+                </td>
+                <td>
+                    <input id="username" name="username" type="text" placeholder="Username" class="">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="password">Password</label>
+                </td>
+                <td>
+                    <input id="password" name="password" type="password" placeholder="Password" class="">
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <button class="customButton" id="login-button" type="submit">Login</button>
+                </td>
+            </tr>
+        </table>
     </form>
-
-{{#if hasErrors}}
-    <ul class="error-list">
-        {{#each errors}}
-            <li>
-                {{this}}
-            </li>
-        {{/each}}
-    </ul>
-{{/if}}
-    <tr>
-        <td>
-            <a href="/new/teacher" class="customButton" id="login-teacher-creation">New Teacher</a>
-        </td>
-        <td>
-            <a href="/new/student"class="customButton" id="login-student-creation">New Student</a>
-        </td>
-    </tr>
-</table>
+    <table>
+        {{#if hasErrors}}
+            <ul class="error-list">
+                {{#each errors}}
+                    <li>
+                        {{this}}
+                    </li>
+                {{/each}}
+            </ul>
+        {{/if}}
+        <tr>
+            <td>
+                <a href="/new/teacher" class="customButton" id="login-teacher-creation">New Teacher</a>
+            </td>
+            <td>
+                <a href="/new/student"class="customButton" id="login-student-creation">New Student</a>
+            </td>
+        </tr>
+    </table>
 </div>
 <script src="/public/js/login.js"></script>

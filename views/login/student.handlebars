@@ -1,6 +1,6 @@
-<table border="0">
 <form method="POST" action="/new/student">
-    <h1>Student Creation</h1>
+    <table border="0">
+        <h1>Student Creation</h1>
         <tr>
             <td>
                 <label for="studentID">Student ID</label>
@@ -54,21 +54,23 @@
                 <button class="customButton" type="submit">Create</button>
             </td>
         </tr>
+    </table>
 </form>
-{{#if hasErrors}}
-    <ul class="error-list">
-        {{#each errors}}
-            <li>
-                {{this}}
-            </li>
-        {{/each}}
-    </ul>
-{{/if}}
-<tr>
-    <td colspan="2">
-        <a href="/login">Back To Login</a>
-    </td>
-</tr>
+<table>
+    {{#if hasErrors}}
+        <ul class="error-list">
+            {{#each errors}}
+                <li>
+                    {{this}}
+                </li>
+            {{/each}}
+        </ul>
+    {{/if}}
+    <tr>
+        <td colspan="2">
+            <a href="/login">Back To Login</a>
+        </td>
+    </tr>
 
- </table>
+</table>
 <script src="/public/js/creation.js"></script>

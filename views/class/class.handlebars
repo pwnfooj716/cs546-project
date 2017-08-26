@@ -11,8 +11,9 @@
                 <th>Due Date</th>
                 <th>Grade</th>
             </tr>
-
+        </table>
             <ul id="assignment-list">
+                <table>
                 {{#each assignments}}
                     <tr>
                         <td>
@@ -26,12 +27,12 @@
                         </td>
                     </tr>
                 {{/each}}
+                </table>
             </ul>
-        </table>
     </div>
 {{else}}
-    <table>
-        <div id="teacher">
+    <div id="teacher">
+        <table>
             <tr>
                 <td colspan="2">
                     <h1>{{class.name}}</h1>
@@ -63,8 +64,10 @@
                     <a href="/class/{{class.id}}/announcement" class="customButton">Create an announcement</a>
                 </td>
             </tr>
-        </div>
+        </table>
+    </div>
 {{/if}}
+<table>
     <tr>
         <td colspan="2">
             <h5>Announcements for {{class.name}}</h5>
