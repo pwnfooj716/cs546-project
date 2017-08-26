@@ -79,10 +79,11 @@ router.get("/:classID", (req, res) => {
                         submission = sub.find((s) => {
                         return s.studentID === user.id
                     });
+                    let grade = (isNaN(submission.grade))? "NA": submission.grade;
                     assign.push({
                         id: x,
                         assignmentName: assignments[x].assignmentName,
-                        grade: submission.grade,
+                        grade: grade,
                         dueDate: assignments[x].dueDate
                     });
                 }
@@ -99,7 +100,8 @@ router.get("/:classID", (req, res) => {
                         sub.forEach((s) => {
                             for (let y = 0; y < starr.length; y++) {
                                 if (starr[y]._id === s.studentId){
-                                    starr[y].assignments.push(s.grade);
+                                    let grade = (isNaN(s.grade))? "NA": s.grade;
+                                    starr[y].assignments.push(grade);
                                 }
                             }
                         });
@@ -174,7 +176,7 @@ router.get("/:classID/:assignmentID", (req,res) => {
         let submission = assignment.submissions.find((x) => {return x.studentId === student});
         let data = {
             class: {id: classID},
-            assignment: {id: assignmentID, name: assignment.name, description: assignment.prompt, dueDate: assignment.dueDate},
+            assignment: {id: assignmentID, name: assignment.assignmentName, description: assignment.prompt, dueDate: assignment.dueDate},
             student: student
         };
         if (user.isTeacher) {
