@@ -215,7 +215,7 @@ module.exports = {
 				if (student) {
 					lockData.failedLoginAttempts = student.failedLoginAttempts,
 					lockData.lockAccountUntil = student.lockAccountUntil
-					lockData.locked = (Date.now() < student.lockAccountUntil) ? true : false;
+					lockData.locked = Date.now() < student.lockAccountUntil;
 					return lockData;
 				}
 				return teachers().then((collection) => {
@@ -223,7 +223,7 @@ module.exports = {
 						if (teacher) {
 							lockData.failedLoginAttempts = teacher.failedLoginAttempts,
 							lockData.lockAccountUntil = teacher.lockAccountUntil
-							lockData.locked = (Date.now() < teacher.lockAccountUntil) ? true : false;
+							lockData.locked = Date.now() < teacher.lockAccountUntil;
 							return lockData;
 						}
 						return {locked: false, failedLoginAttempts: undefined, lockAccountUntil: undefined};
