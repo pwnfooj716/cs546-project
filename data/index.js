@@ -186,6 +186,67 @@ function getAssignment(assignmentId) {
 }
 
 module.exports = {
+	// User: Passport
+	failedLoginAttempt(username, failedAttempts) {
+		let waitTime = Math.pow(2.5, failedAttempts);
+		let updates = {
+			$inc: {failedLoginAttempts: 1},
+			$set: {lockAccountUntil: Date.now() + waitTime}
+		};
+		
+		return students().then((collection) => {
+			return collection.findOneAndUpdate({username: username}, updates).then((result) => {
+				if (result.value) {
+					return;
+				}
+				return teachers().then((collection) => {
+					return collection.findOneAndUpdate({username: username}, updates).then((result) => {
+						return;
+					});
+				});
+			});
+		});
+	},
+	// User: Passport
+	accountLocked(username) {
+		let lockData = {};
+		return students().then((collection) => {
+			return collection.findOne({username: username}).then((student) => {
+				if (student) {
+					lockData.failedLoginAttempts = student.failedLoginAttempts,
+					lockData.lockAccountUntil = student.lockAccountUntil
+					lockData.locked = Date.now() < student.lockAccountUntil;
+					return lockData;
+				}
+				return teachers().then((collection) => {
+					return collection.findOne({username: username}).then((teacher) => {
+						if (teacher) {
+							lockData.failedLoginAttempts = teacher.failedLoginAttempts,
+							lockData.lockAccountUntil = teacher.lockAccountUntil
+							lockData.locked = Date.now() < teacher.lockAccountUntil;
+							return lockData;
+						}
+						return {locked: false, failedLoginAttempts: undefined, lockAccountUntil: undefined};
+					});
+				});
+			});
+		});
+	},
+	// User: Passport
+	resetLoginAttempts(userId, isStudent) {
+		let updates = {
+			$set: {failedLoginAttempts: 0}
+		};
+		
+		if (isStudent) {
+			return students().then((collection) => {
+				return collection.update({_id: userId}, updates);
+			});
+		}
+		return teachers().then((collection) => {
+			return collection.update({_id: userId}, updates);
+		});
+	},
 	// User: Student
 	addStudent(studentId, firstName, lastName, username, hashedPassword) {
 		if (typeof studentId != "string") {
@@ -210,6 +271,8 @@ module.exports = {
 			lastName: lastName,
 			username: username,
 			hashedPassword: hashedPassword,
+			failedLoginAttempts: 0,
+			lockAccountUntil: Date.now(),
 			courses: []
 		};
 
@@ -241,6 +304,8 @@ module.exports = {
 			lastName: lastName,
 			username: username,
 			hashedPassword: hashedPassword,
+			failedLoginAttempts: 0,
+			lockAccountUntil: Date.now(),
 			courses: []
 		};
 
