@@ -5,8 +5,7 @@ const teachers = mongoCollections.teachers;
 const courses = mongoCollections.courses;
 const assignments = mongoCollections.assignments;
 
-//let test = process.env.TEST;
-let test=2;
+let test = process.env.TEST;
 if (test == 1) {
     students().then((collection) => {
         collection.find({}).toArray().then((result) => {
