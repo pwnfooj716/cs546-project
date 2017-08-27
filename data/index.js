@@ -200,7 +200,7 @@ function deleteCourseForStudents(courseId, studentIds) {
 		let courseInfo = {
 			courseId: courseId
 		};
-        return collection.update({_id: {$in: studentIds}}, {$pull: {courses: courseInfo}}, {multi: true});
+		return collection.update({_id: {$in: studentIds}}, {$pull: {courses: courseInfo}}, {multi: true});
 	});
 }
 
