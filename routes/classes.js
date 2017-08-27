@@ -179,13 +179,13 @@ router.get("/:classID/:assignmentID", (req,res) => {
             assignment: {id: assignmentID, name: assignment.assignmentName, description: assignment.prompt, dueDate: assignment.dueDate},
             student: student
         };
-        if (user.isTeacher) {
+        if (submission) {
             data.submission = submission;
+        }
+        if (user.isTeacher) {
             data.submission.grade = (isNaN(data.submission.grade)) ? 0 : data.submission.grade;
             data.isTeacher = true;
         }
-        if (user.isStudent && submission.submission)
-            data.submission = submission.submission.originalname;
         res.render('class/assign', data);
     });
 });

@@ -1,35 +1,35 @@
 <div>
     <h1>{{assignment.name}}</h1>
-    <table>
+<table>
+    <tr>
+        <td>
+            Prompt:
+        </td>
+        <td>
+            <p>{{assignment.description}}</p>
+        </td>
+    </tr>
+    {{#if isTeacher}}
         <tr>
             <td>
-                Prompt:
+                <label>Due Date:</label>
             </td>
-            <td>
-                <p>{{assignment.description}}</p>
+            <td colspan="2">
+                <span>{{assignment.dueDate}}</span>
             </td>
         </tr>
-        {{#if isTeacher}}
-            <tr>
-                <td>
-                    <label>Due Date:</label>
-                </td>
-                <td colspan="2">
-                    <span>{{assignment.dueDate}}</span>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <label>Grade:</label>
-                </td>
-                <td>
-                    <input id="grade" type="number" value="{{submission.grade}}">
-                </td>
-                <td>
-                    <button class="customButton" id="update-grade" onclick="grader({{class.id}}, {{assignment.id}}, {{student}})">Update</button>
-                </td>
-            </tr>
-            {{#if submission.submission}}
+        <tr>
+            <td>
+                <label>Grade:</label>
+            </td>
+            <td>
+                <input id="grade" type="number" value="{{submission.grade}}">
+            </td>
+            <td>
+                <button class="customButton" id="update-grade" onclick="grader({{class.id}}, {{assignment.id}}, {{student}})">Update</button>
+            </td>
+        </tr>
+        {{#if submission.submission}}
             <tr>
                 <td>
                     Current Submission:
@@ -46,53 +46,63 @@
                     <span>{{submission.submissionDate}}</span>
                 </td>
             </tr>
-            {{/if}}
+        {{/if}}
+        <tr>
+            <td>
+                <label>Comment:</label>
+            </td>
+            <td>
+                <textarea id="teacher-comment">{{submission.teacherResponse}}</textarea>
+            </td>
+            <td>
+                <button class="customButton" id="update-teacher-comment" onclick="comment({{class.id}}, {{assignment.id}}, {{student}})">Update</button>
+            </td>
+        </tr>
+        <script src="/public/js/grade.js"></script>
+    {{else}}
+        {{#if submission.submission}}
             <tr>
                 <td>
-                    <label>Comment:</label>
+                    Current Submission:
                 </td>
                 <td>
-                    <textarea id="teacher-comment">{{submission.teacherResponse}}</textarea>
-                </td>
-                <td>
-                    <button class="customButton" id="update-teacher-comment" onclick="comment({{class.id}}, {{assignment.id}}, {{student}})">Update</button>
+                    <a href="/class/{{class.id}}/{{assignment.id}}/{{student}}">{{submission.submission.originalname}}</a>
                 </td>
             </tr>
-            <script src="/public/js/grade.js"></script>
-        {{else}}
-            {{#if submission}}
-                <tr>
-                    <td>
-                        Current Submission:
-                    </td>
-                    <td>
-                        <a href="/class/{{class.id}}/{{assignment.id}}/{{student}}">{{submission}}</a>
-                    </td>
-                </tr>
-                </table>
-            {{/if}}
-                <form method="POST" action="/class/{{class.id}}/{{assignment.id}}" enctype="multipart/form-data">
-                    <table>
-                    <tr>
-                        <td>
-                            <label for="file-selector">Select a file to Submit: </label>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <input type="file" name="submission" id="file-selector">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button type="submit" class="customButton">Submit</button>
-                        </td>
-                    </tr>
-                    </table>
-                </form>
-            <table>
+        {{/if}}
+        {{#if submission.teacherResponse}}
+            <tr>
+                <td>
+                    Teacher Comment:
+                </td>
+                <td>
+                    <p>{{submission.teacherResponse}}</p>
+                </td>
+            </tr>
         {{/if}}
     </table>
+        <form method="POST" action="/class/{{class.id}}/{{assignment.id}}" enctype="multipart/form-data">
+            <table>
+                <tr>
+                    <td>
+                        <label for="file-selector">Select a file to Submit: </label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="file" name="submission" id="file-selector">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <button type="submit" class="customButton">Submit</button>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    <table>
+    {{/if}}
+</table>
     <a href="/class/{{class.id}}" class="customButton">Back</a>
     <a href="/logout"  class="customButton">Logout</a>
 </div>
