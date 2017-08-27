@@ -140,3 +140,6 @@ p {
 .buttons {
     margin-top: 10px;
 }
+#class-list {
+    padding-left: 0px;
+}
