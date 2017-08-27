@@ -7,10 +7,10 @@ const assignments = mongoCollections.assignments;
 
 //removes database and then deletes files in file_uploads
 let clear = (() => {
-    students().then((collection) => {
-        collection.remove({});
+    return students().then((collection) => {
+       return collection.remove({});
     }).then(() => {
-        teachers().then((collection) => {
+        return teachers().then((collection) => {
             collection.remove({});
             return courses().then((collection) => {
                 collection.remove({});

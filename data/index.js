@@ -1,5 +1,6 @@
 const uuid = require("uuid/v4");
 const mongoCollections = require("../config/mongoCollections");
+const del = require("del");
 
 const students = mongoCollections.students;
 const teachers = mongoCollections.teachers;
@@ -185,6 +186,39 @@ function getAssignment(assignmentId) {
 	});
 }
 
+function deleteCourseForTeacher(courseId, teacherId) {
+	return teachers().then((collection) => {
+		let courseInfo = {
+			courseId: courseId
+		};
+		return collection.update({_id: teacherId}, {$pull: {courses: courseInfo}})
+	});
+}
+
+function deleteCourseForStudents(courseId, studentIds) {
+	return students().then((collection) => {
+		let courseInfo = {
+			courseId: courseId
+		};
+        return collection.update({_id: {$in: studentIds}}, {$pull: {courses: courseInfo}}, {multi: true});
+	});
+}
+function deleteAssignments(assignmentIds) {
+	return assignments().then((collection) => {
+		return collection.find({_id: {$in: assignmentIds}}).toArray().then((assigns) => {
+			let files = [];
+			assigns.forEach((x) => {
+				x.submissions.forEach((y) => {
+					if (y.submission)
+					files.push("file_uploads/" + y.submission.filename);
+				});
+			});
+			del(files).then(() => {
+				collection.remove({_id: {$in: assignmentIds}});
+			});
+		});
+	})
+}
 module.exports = {
 	// User: Passport
 	failedLoginAttempt(username, failedAttempts) {
@@ -492,6 +526,16 @@ module.exports = {
 					});
 				}
 			});
+		});
+	},
+	deleteCourse(courseID) {
+		return courses().then((collection) => {
+			return collection.findOne({_id: courseID}).then((course) => {
+				deleteCourseForTeacher(course._id,course.teacherId);
+				deleteCourseForStudents(course._id,course.studentIDs);
+				deleteAssignments(course.assignments);
+				return collection.removeOne({_id: courseID});
+			})
 		});
 	}
 }
