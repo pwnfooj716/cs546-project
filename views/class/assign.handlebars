@@ -1,8 +1,15 @@
 <div>
     <h1>{{assignment.name}}</h1>
-    <p>Prompt: {{assignment.description}}</p>
-    {{#if isTeacher}}
-        <table>
+    <table>
+        <tr>
+            <td>
+                Prompt:
+            </td>
+            <td>
+                <p>{{assignment.description}}</p>
+            </td>
+        </tr>
+        {{#if isTeacher}}
             <tr>
                 <td>
                     <label>Due Date:</label>
@@ -16,17 +23,19 @@
                     <label>Grade:</label>
                 </td>
                 <td>
-                    <input id="grade" type="number" pattern="[0-9|.]{3}" value="{{submission.grade}}">
+                    <input id="grade" type="number" value="{{submission.grade}}">
                 </td>
                 <td>
                     <button class="customButton" id="update-grade" onclick="grader({{class.id}}, {{assignment.id}}, {{student}})">Update</button>
                 </td>
             </tr>
+            {{#if submission.submission}}
             <tr>
-                <td colspan="3">
-                    {{#if submission.submission}}
-                        <div>Current Submission: <a href="/class/{{class.id}}/{{assignment.id}}/{{student}}">{{submission.submission.originalname}}</a></div>
-                    {{/if}}
+                <td>
+                    Current Submission:
+                </td>
+                <td>
+                    <a href="/class/{{class.id}}/{{assignment.id}}/{{student}}">{{submission.submission.originalname}}</a>
                 </td>
             </tr>
             <tr>
@@ -37,6 +46,7 @@
                     <span>{{submission.submissionDate}}</span>
                 </td>
             </tr>
+            {{/if}}
             <tr>
                 <td>
                     <label>Comment:</label>
@@ -48,60 +58,41 @@
                     <button class="customButton" id="update-teacher-comment" onclick="comment({{class.id}}, {{assignment.id}}, {{student}})">Update</button>
                 </td>
             </tr>
-        </table>
-        <script src="/public/js/grade.js"></script>
-    {{else}}
-    <table>
-        {{#if submission}}
-            <tr>
-                <td>
-
-                    <div>Current Submission: <a href="/class/{{class.id}}/{{assignment.id}}/{{student}}">{{submission}}</a></div>
-
-                </td>
-            </tr>
-            <form method="PUT" action="/class/{{class.id}}/{{assignment.id}}" enctype="multipart/form-data">
-                <tr>
-                    <td>
-                        <label for="file-selector">Select a file to Submit: </label>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <input type="file" name="submission" id="file-selector">
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <button type="submit" class="customButton">Submit</button>
-                    </td>
-                </tr>
-            </form>
+            <script src="/public/js/grade.js"></script>
         {{else}}
-            <form method="POST" action="/class/{{class.id}}/{{assignment.id}}" enctype="multipart/form-data">
+            {{#if submission}}
                 <tr>
                     <td>
-                        <label for="file-selector">Select a file to Submit: </label>
+                        Current Submission:
                     </td>
-                </tr>
-                <tr>
                     <td>
-                        <input type="file" name="submission" id="file-selector">
+                        <a href="/class/{{class.id}}/{{assignment.id}}/{{student}}">{{submission}}</a>
                     </td>
                 </tr>
-                <tr>
-                    <td>
-                        <button type="submit" class="customButton">Submit</button>
-                    </td>
-                </tr>
-            </form>
+                </table>
+            {{/if}}
+                <form method="POST" action="/class/{{class.id}}/{{assignment.id}}" enctype="multipart/form-data">
+                    <table>
+                    <tr>
+                        <td>
+                            <label for="file-selector">Select a file to Submit: </label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="file" name="submission" id="file-selector">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <button type="submit" class="customButton">Submit</button>
+                        </td>
+                    </tr>
+                    </table>
+                </form>
+            <table>
         {{/if}}
-    {{/if}}
-    <tr>
-        <td >
-            <a href="/class/{{class.id}}" class="customButton">Back</a>
-            <a href="/logout"  class="customButton">Logout</a>
-        </td>
-    </tr>
-</table>
+    </table>
+    <a href="/class/{{class.id}}" class="customButton">Back</a>
+    <a href="/logout"  class="customButton">Logout</a>
 </div>

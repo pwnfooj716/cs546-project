@@ -23,30 +23,6 @@
                 </td>
             </tr>
         {{/each}}
-        <tr>
-            <td colspan="2">
-                <h5>Announcements for {{class.name}}</h5>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <div id="announcements">
-                    {{#each announcements}}
-                        <h5>{{name}}</h5>
-                        <p>{{description}}</p>
-                    {{/each}}
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td align="right">
-                <a href="/class" class="customButton">Back</a>
-            </td>
-            <td align ="left">
-                <a href="/logout" class="customButton">Logout</a>
-            </td>
-        </tr>
-    </table>
 {{else}}
     <table>
         <tr>
@@ -74,34 +50,32 @@
             <td colspan="2">
                 <a href="/class/{{class.id}}/assignment" class="customButton">Create an assignment</a>
             </td>
-        </tr>
-        <tr>
             <td colspan="2">
                 <a href="/class/{{class.id}}/announcement" class="customButton">Create an announcement</a>
             </td>
         </tr>
-        <tr>
-            <td colspan="2">
-                <h5>Announcements for {{class.name}}</h5>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <div id="announcements">
-                    {{#each announcements}}
-                        <h5>{{name}}</h5>
-                        <p>{{description}}</p>
-                    {{/each}}
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td align="right">
-                <a href="/class" class="customButton">Back</a>
-            </td>
-            <td align ="left">
-                <a href="/logout" class="customButton">Logout</a>
-            </td>
-        </tr>
-    </table>
 {{/if}}
+    <tr>
+        <td colspan="2">
+            <h5>Announcements for {{class.name}}</h5>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <div id="announcements">
+                {{#each announcements}}
+                    <h5>{{name}}</h5>
+                    <p>{{description}}</p>
+                {{/each}}
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <a href="/class" class="customButton">Back</a>
+        </td>
+        <td>
+            <a href="/logout" class="customButton">Logout</a>
+        </td>
+    </tr>
+</table>

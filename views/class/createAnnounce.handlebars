@@ -1,5 +1,5 @@
-<table>
-    <form method="POST" action="/class/{{classId}}/announcement">
+<form method="POST" action="/class/{{classId}}/announcement">
+    <table>
         <tr>
             <td colspan="2">
                 <h1>Announcement Creation</h1>
@@ -26,13 +26,14 @@
                 <button type="submit" class="customButton">Create</button>
             </td>
         </tr>
-    </form>
-    <tr>
-        <td>
-            <a href="/class/{{classId}}" class="customButton">Back To Class</a>
-        </td>
-        <td>
-            <a href="/logout" class="customButton">Logout</a>
-        </td>
-    </tr>
-</table>
+
+        <tr>
+            <td>
+                <a href="/class/{{classId}}" class="customButton">Back To Class</a>
+            </td>
+            <td>
+                <a href="/logout" class="customButton">Logout</a>
+            </td>
+        </tr>
+    </table>
+</form>

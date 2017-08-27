@@ -1,12 +1,12 @@
 <form method="POST" action="/new/student">
-    <table class="creation" border="0">
-        <h1>Student Creation</h1>
+    <h1>Student Creation</h1>
+    <table class="creation">
         <tr>
             <td>
-                <label for="studentID">Student ID</label>
+                <label for="ID">Student ID</label>
             </td>
             <td>
-                <input id="studentID" name="_id" type="number" pattern="[0-9]{8}" placeholder="10000000" oninvalid="setCustomValidity('Id must be 8 numerical characters')" required>
+                <input id="ID" name="_id" type="number" placeholder="10000000" onchange="valid()" required>
             </td>
         </tr>
         <tr>
