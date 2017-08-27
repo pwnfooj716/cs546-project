@@ -99,17 +99,10 @@ p {
     align-items: center;
     align-content: center;
     text-align: center;
-    margin-top: 17%;
+    margin-left: 40%;
 }
 .loginWrapper > table {
     margin-left: 2%;
-}
-
-.centralBody {
-
-}
-.creation {
-    //margin-left: 38%;
 }
 .error {
     text-align: center;
