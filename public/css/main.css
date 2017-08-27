@@ -109,7 +109,7 @@ p {
 
 }
 .creation {
-    margin-left: 38%;
+    //margin-left: 38%;
 }
 .error {
     text-align: center;
@@ -139,4 +139,7 @@ p {
 }
 .buttons {
     margin-top: 10px;
+}
+#class-list {
+    padding-left: 0px;
 }

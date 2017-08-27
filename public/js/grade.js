@@ -4,8 +4,9 @@ const teacherR = $("#teacher-comment")[0];
 //const updateComment = $("#update-teacher-comment");
 function grader (classId, assignmentId, studentId){
     let data = {grade: grade.value};
-    if (isNaN(Number(data.grade)))
+    if (isNaN(Number(data.grade)) || data.grade.length > 3) {
         return;
+    }
     $.ajax({
         type: 'PUT',
         url: `/class/${classId}/${assignmentId}/${studentId}/grade`,
