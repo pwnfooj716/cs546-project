@@ -4,7 +4,7 @@
   "description": "Canvas-like system to keep track of assignments and grades from multiple courses",
   "main": "app.js",
   "scripts": {
-    "data": "node data.js",
+    "data": "node alldata.js",
     "clear": "node clear.js",
     "seed": "node seed.js",
     "start": "node app.js",

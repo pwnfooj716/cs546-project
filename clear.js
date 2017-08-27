@@ -6,20 +6,26 @@ const courses = mongoCollections.courses;
 const assignments = mongoCollections.assignments;
 
 //removes database and then deletes files in file_uploads
-module.exports = students().then((collection) => {
-    collection.remove({});
-}).then(()=>{
-    teachers().then((collection) => {
+let clear = (() => {
+    students().then((collection) => {
         collection.remove({});
-        courses().then((collection) => {
+    }).then(() => {
+        teachers().then((collection) => {
             collection.remove({});
-            assignments().then((collection) => {
+            return courses().then((collection) => {
                 collection.remove({});
-            }).then(() => {
-                del(['file_uploads/*', '!file_uploads/.gitignore']).then(paths => {
-                    console.log('Deleted files and folders:\n', paths.join('\n'));
+                return assignments().then((collection) => {
+                    collection.remove({});
+                }).then(() => {
+                    del(['file_uploads/*', '!file_uploads/.gitignore']).then(paths => {
+                        console.log('Deleted files and folders:\n', paths.join('\n'));
+                    });
                 });
-            })
+            });
         });
     });
 });
+
+clear();
+
+module.exports = {clear};
