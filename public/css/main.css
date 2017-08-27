@@ -111,12 +111,12 @@ p {
     color:red;
 }
 .class:nth-child(odd) {
-    background-color: gray;
-    color: white
+    background-color: greenyellow;
+    color: blue;
 }
 .class:nth-child(even) {
-    background-color: lightgray;
-    color:black;
+    background-color: orange;
+    color:blue;
 }
 .class {
     list-style-type: none;
@@ -128,10 +128,10 @@ p {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 .class:nth-child(odd) > a:visited {
-    color: white;
+    color: blueviolet;
 }
 .class:nth-child(even) > a:visited {
-    color: black;
+    color: blueviolet;
 }
 .buttons {
     margin-top: 10px;
