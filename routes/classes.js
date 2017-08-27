@@ -319,7 +319,7 @@ router.post("/:classID/:assignmentID", upload.single("submission"), (req, res) =
             return;
         }
         db.updateAssignmentSubmission(req.user._id, assignments[assignmentID]._id, submission).then(() => {
-            res.redirect(`class/${classID}/${assignmentID}`);
+            res.redirect(`/class/${classID}/${assignmentID}`);
         });
     });
 });
