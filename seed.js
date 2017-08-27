@@ -2,7 +2,7 @@ const data = require("./data");
 const bcrypt = require("bcryptjs");
 const clear = require("./clear");
 
-clear.clear().then(() => {
+clear().then(() => {
         return data.addTeacher("00000001", "TA", "TeacherA", "T1", bcrypt.hashSync("abc",8)).then(() => {
             console.log("Added teacher A with id: 00000001, username: T1 and password: abc");
             return data.addTeacher("00000002", "TB", "TeacherB", "T2", bcrypt.hashSync("cba",8)).then(()=> {
@@ -26,7 +26,8 @@ clear.clear().then(() => {
             });
         });
     }).then(() => {
-    console.log("Done seeding database");
+		console.log("Done seeding database");
+		process.exit();
 }, (error) => {
     console.error(error);
 });

@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "data": "node alldata.js",
-    "clear": "node clear.js",
+    "clear": "node runClear.js",
     "seed": "node seed.js",
     "start": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"

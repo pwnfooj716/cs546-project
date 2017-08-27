@@ -22,6 +22,7 @@ students().then((collection) => {
                             collection.find({}).toArray().then((result) => {
                                 console.log("this is all assignments");
                                 console.log(result);
+								process.exit();
                             });
                         });
                     });
