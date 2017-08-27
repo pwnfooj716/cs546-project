@@ -64,11 +64,12 @@ router.get("/:classID", (req, res) => {
         res.redirect("/login");
         return;
     }
-    let courseID = user.courses[req.params.classID].courseId;
-    if (!courseID) {
+    if (!user.courses[req.params.classID]) {
         res.redirect("/class");
         return;
     }
+    let courseID = user.courses[req.params.classID].courseId;
+
     db.getAssignmentsForCourse(courseID).then((assignments) => {
         let data = {};
         let assign = [];
@@ -144,7 +145,7 @@ router.delete("/:classID", (req, res) => {
         res.redirect("/login");
         return;
     }
-    if (!user.courses[req.params.classID].courseId) {
+    if (!user.courses[req.params.classID]) {
         res.redirect("/login");
         return;
     }
@@ -160,6 +161,10 @@ router.get("/:classID/assignment", (req, res) => {
         res.redirect("/login");
         return;
     }
+    if (!user.courses[req.params.classID]) {
+        res.redirect("/class");
+        return;
+    }
     let data = {classId: req.params.classID};
     res.render('class/createAssign', data);
 });
@@ -168,6 +173,10 @@ router.get("/:classID/announcement", (req, res) => {
     let user = req.user;
     if (!user || user.isStudent) {
         res.redirect("/login");
+        return;
+    }
+    if (!user.courses[req.params.classID]) {
+        res.redirect("/class");
         return;
     }
     let data = {classId: req.params.classID};
@@ -187,7 +196,7 @@ router.get("/:classID/:assignmentID", (req,res) => {
     }
     let classID = req.params.classID;
     let assignmentID = req.params.assignmentID;
-    if (!user.courses[classID].courseId) {
+    if (!user.courses[classID]) {
         res.redirect("/class");
         return;
     }
@@ -231,7 +240,7 @@ router.get("/:classID/:assignmentID/:studentID", (req, res) => {
         res.sendStatus(403);
         return;
     }
-    if (!user.courses[classID].courseId) {
+    if (!user.courses[classID]) {
         res.redirect("/class");
         return;
     }
@@ -269,6 +278,10 @@ router.post("/:classID/announcement", (req, res) => {
         res.redirect("/login");
         return;
     }
+    if (!user.courses[req.params.classID]) {
+        res.redirect("/class");
+        return;
+    }
     let data = req.body;
     let courseID = user.courses[req.params.classID].courseId;
     if (!courseID) {
@@ -296,7 +309,8 @@ router.post("/:classID/:assignmentID", upload.single("submission"), (req, res) =
     };
     let classID = req.params.classID;
     let assignmentID = req.params.assignmentID;
-    if (!user.courses[classID].courseId) {
+    if (!user.courses[classID]) {
+        res.redirect("/class");
         return;
     }
     db.getAssignmentsForCourse(user.courses[classID].courseId).then((assignments) => {
@@ -327,7 +341,8 @@ router.put("/:classID/:assignmentID", upload.single("submission"), (req, res) =>
     };
     let classID = req.params.classID;
     let assignmentID = req.params.assignmentID;
-    if (!user.courses[classID].courseId) {
+    if (!user.courses[classID]) {
+        res.redirect("/class");
         return;
     }
     db.getAssignmentsForCourse(user.courses[classID].courseId).then((assignments)=> {
@@ -356,12 +371,13 @@ router.put("/:classID/:assignmentID/:studentID/grade", (req, res) => {
         res.json({error: "grade not a number"});
         return;
     }
-    if (!user.courses[classID].courseId) {
+    if (!user.courses[classID]) {
+        res.json({error: "class does not exist"});
         return;
     }
     db.getAssignmentsForCourse(user.courses[classID].courseId).then((assignments) => {
         if (assignments.length <= assignmentID) {
-            res.redirect(`/${classID}`);
+            res.redirect(`/class/${classID}`);
             return;
         }
         db.updateAssignmentGrade(studentID, user.courses[classID].courseId,
@@ -386,12 +402,13 @@ router.put("/:classID/:assignmentID/:studentID/comment", (req, res) => {
         res.json({error: "no comment given"});
         return;
     }
-    if (!user.courses[classID].courseId) {
+    if (!user.courses[classID]) {
+        res.json({error: "class does nto exist"});
         return;
     }
     db.getAssignmentsForCourse(user.courses[classID].courseId).then((assignments) => {
         if (assignments.length <= assignmentID) {
-            res.redirect(`/${classID}`);
+            res.redirect(`/class/${classID}`);
             return;
         }
         db.updateAssignmentGrade(studentID, user.courses[classID].courseId, assignments[assignmentID]._id,
