@@ -203,6 +203,7 @@ function deleteCourseForStudents(courseId, studentIds) {
         return collection.update({_id: {$in: studentIds}}, {$pull: {courses: courseInfo}}, {multi: true});
 	});
 }
+
 function deleteAssignments(assignmentIds) {
 	return assignments().then((collection) => {
 		return collection.find({_id: {$in: assignmentIds}}).toArray().then((assigns) => {
@@ -213,12 +214,13 @@ function deleteAssignments(assignmentIds) {
 					files.push("file_uploads/" + y.submission.filename);
 				});
 			});
-			del(files).then(() => {
-				collection.remove({_id: {$in: assignmentIds}});
+			return del(files).then(() => {
+				return collection.remove({_id: {$in: assignmentIds}});
 			});
 		});
 	})
 }
+
 module.exports = {
 	// User: Passport
 	failedLoginAttempt(username, failedAttempts) {
@@ -531,10 +533,13 @@ module.exports = {
 	deleteCourse(courseID) {
 		return courses().then((collection) => {
 			return collection.findOne({_id: courseID}).then((course) => {
-				deleteCourseForTeacher(course._id,course.teacherId);
-				deleteCourseForStudents(course._id,course.studentIDs);
-				deleteAssignments(course.assignments);
-				return collection.removeOne({_id: courseID});
+				return deleteCourseForTeacher(course._id,course.teacherId).then(() => {
+					return deleteCourseForStudents(course._id,course.studentIDs).then(() => {
+						return deleteAssignments(course.assignments).then(() => {
+							return collection.removeOne({_id: courseID});
+						});
+					});
+				});
 			})
 		});
 	}
