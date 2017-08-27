@@ -201,7 +201,7 @@ router.get("/:classID/:assignmentID", (req,res) => {
         return;
     }
     db.getAssignmentsForCourse(user.courses[classID].courseId).then((assignments)=> {
-        if (assignments.length < assignmentID) {
+        if (assignments.length <= assignmentID) {
             res.redirect(`/class/${classID}`);
             return;
         }
