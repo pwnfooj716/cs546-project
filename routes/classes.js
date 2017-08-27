@@ -64,7 +64,12 @@ router.get("/:classID", (req, res) => {
         res.redirect("/login");
         return;
     }
+    if (!user.courses[req.params.classID]) {
+        res.redirect("/class");
+        return;
+    }
     let courseID = user.courses[req.params.classID].courseId;
+
     db.getAssignmentsForCourse(courseID).then((assignments) => {
         let data = {};
         let assign = [];
@@ -133,11 +138,31 @@ router.post("/", (req,res) => {
 
 });
 
+router.delete("/:classID", (req, res) => {
+   //class deletion
+    let user = req.user;
+    if (!user || user.isStudent) {
+        res.redirect("/login");
+        return;
+    }
+    if (!user.courses[req.params.classID]) {
+        res.redirect("/login");
+        return;
+    }
+    db.deleteCourse(user.courses[req.params.classID].courseId).then(() => {
+        res.redirect("/class");
+    });
+});
+
 router.get("/:classID/assignment", (req, res) => {
     //assignment creation page
     let user = req.user;
     if (!user || user.isStudent) {
         res.redirect("/login");
+        return;
+    }
+    if (!user.courses[req.params.classID]) {
+        res.redirect("/class");
         return;
     }
     let data = {classId: req.params.classID};
@@ -148,6 +173,10 @@ router.get("/:classID/announcement", (req, res) => {
     let user = req.user;
     if (!user || user.isStudent) {
         res.redirect("/login");
+        return;
+    }
+    if (!user.courses[req.params.classID]) {
+        res.redirect("/class");
         return;
     }
     let data = {classId: req.params.classID};
@@ -167,9 +196,13 @@ router.get("/:classID/:assignmentID", (req,res) => {
     }
     let classID = req.params.classID;
     let assignmentID = req.params.assignmentID;
+    if (!user.courses[classID]) {
+        res.redirect("/class");
+        return;
+    }
     db.getAssignmentsForCourse(user.courses[classID].courseId).then((assignments)=> {
-        if (assignments.length < assignmentID) {
-            res.redirect(`/${classID}`);
+        if (assignments.length <= assignmentID) {
+            res.redirect(`/class/${classID}`);
             return;
         }
         let assignment = assignments[assignmentID];
@@ -207,10 +240,13 @@ router.get("/:classID/:assignmentID/:studentID", (req, res) => {
         res.sendStatus(403);
         return;
     }
-
+    if (!user.courses[classID]) {
+        res.redirect("/class");
+        return;
+    }
     db.getAssignmentsForCourse(user.courses[classID].courseId).then((assignments) => {
         if (assignments.length <= assignmentID) {
-            res.redirect(`/${classID}`);
+            res.redirect(`/class/${classID}`);
             return;
         }
         db.getAssignmentSubmission(assignments[assignmentID]._id, studentID).then((submission) => {
@@ -228,6 +264,9 @@ router.post("/:classID/assignment", (req, res) => {
     }
     let data = req.body;
     let courseID = user.courses[req.params.classID].courseId;
+    if (!courseID) {
+        return;
+    }
     db.createAssignmentForCourse(courseID, data.name, data.prompt,
                                  data.dueDate).then(() => res.redirect(`/class/${req.params.classID}`));
 });
@@ -239,8 +278,15 @@ router.post("/:classID/announcement", (req, res) => {
         res.redirect("/login");
         return;
     }
+    if (!user.courses[req.params.classID]) {
+        res.redirect("/class");
+        return;
+    }
     let data = req.body;
     let courseID = user.courses[req.params.classID].courseId;
+    if (!courseID) {
+        return;
+    }
     db.createAnnouncementForCourse(courseID, data.name, data.prompt).then(() => {
         res.redirect(`/class/${req.params.classID}`);
     });
@@ -253,20 +299,27 @@ router.post("/:classID/:assignmentID", upload.single("submission"), (req, res) =
         res.redirect("/login");
         return;
     }
-    
+    if (!req.file) {
+        res.redirect(`/class/${req.params.classID}/${req.params.assignmentID}`)
+        return;
+    }
     let submission = {
         originalname: req.file.originalname,
         filename: req.file.filename
     };
     let classID = req.params.classID;
     let assignmentID = req.params.assignmentID;
+    if (!user.courses[classID]) {
+        res.redirect("/class");
+        return;
+    }
     db.getAssignmentsForCourse(user.courses[classID].courseId).then((assignments) => {
         if (assignments.length <= assignmentID) {
-            res.redirect(`/${classID}`);
+            res.redirect(`/class/${classID}`);
             return;
         }
         db.updateAssignmentSubmission(req.user._id, assignments[assignmentID]._id, submission).then(() => {
-            res.redirect(`/${classID}/${assignmentID}`);
+            res.redirect(`class/${classID}/${assignmentID}`);
         });
     });
 });
@@ -278,19 +331,27 @@ router.put("/:classID/:assignmentID", upload.single("submission"), (req, res) =>
         res.redirect("/login");
         return;
     }
+    if (!req.file) {
+        res.redirect(`/class/${req.params.classID}/${req.params.assignmentID}`)
+        return;
+    }
     let submission = {
         originalname: req.file.originalname,
         filename: req.file.filename
     };
     let classID = req.params.classID;
     let assignmentID = req.params.assignmentID;
+    if (!user.courses[classID]) {
+        res.redirect("/class");
+        return;
+    }
     db.getAssignmentsForCourse(user.courses[classID].courseId).then((assignments)=> {
         if (assignments.length <= assignmentID) {
-            res.redirect(`/${classID}`);
+            res.redirect(`/class/${classID}`);
             return;
         }
         db.updateAssignmentSubmission(req.user._id, assignments[assignmentID]._id, submission).then(() => {
-            res.redirect(`/${classID}/${assignmentID}`);
+            res.redirect(`/class/${classID}/${assignmentID}`);
         });
     });
 });
@@ -310,9 +371,13 @@ router.put("/:classID/:assignmentID/:studentID/grade", (req, res) => {
         res.json({error: "grade not a number"});
         return;
     }
+    if (!user.courses[classID]) {
+        res.json({error: "class does not exist"});
+        return;
+    }
     db.getAssignmentsForCourse(user.courses[classID].courseId).then((assignments) => {
         if (assignments.length <= assignmentID) {
-            res.redirect(`/${classID}`);
+            res.redirect(`/class/${classID}`);
             return;
         }
         db.updateAssignmentGrade(studentID, user.courses[classID].courseId,
@@ -337,9 +402,13 @@ router.put("/:classID/:assignmentID/:studentID/comment", (req, res) => {
         res.json({error: "no comment given"});
         return;
     }
+    if (!user.courses[classID]) {
+        res.json({error: "class does nto exist"});
+        return;
+    }
     db.getAssignmentsForCourse(user.courses[classID].courseId).then((assignments) => {
         if (assignments.length <= assignmentID) {
-            res.redirect(`/${classID}`);
+            res.redirect(`/class/${classID}`);
             return;
         }
         db.updateAssignmentGrade(studentID, user.courses[classID].courseId, assignments[assignmentID]._id,
