@@ -4,8 +4,9 @@
   "description": "Canvas-like system to keep track of assignments and grades from multiple courses",
   "main": "app.js",
   "scripts": {
-    "data": "TEST=1 node debug.js",
-    "clear": "TEST=2 node debug.js",
+    "data": "node data.js",
+    "clear": "node clear.js",
+    "seed": "node seed.js",
     "start": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -23,6 +24,7 @@
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.17.2",
     "connect-flash": "^0.1.1",
+    "del": "^3.0.0",
     "express": "^4.15.3",
     "express-handlebars": "^3.0.0",
     "express-session": "^1.15.5",
